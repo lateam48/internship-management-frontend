@@ -1,0 +1,67 @@
+import NextAuth, {NextAuthConfig} from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+
+export const authOptions = {
+    secret: process.env.NEXTAUTH_SECRET,
+    session: {
+        strategy: "jwt",
+    },
+    providers: [
+        Credentials({
+            credentials: {
+                email: {label: "Email", type: "email"},
+                password: {label: "Password", type: "password"},
+            },
+            authorize: async (credentials) => {
+                try {
+                    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+                        method: "POST",
+                        body: JSON.stringify(credentials),
+                        headers: {"Content-Type": "application/json"}
+                    });
+
+                    if (!res.ok) {
+                        const error = await res.json();
+                        throw new Error(error.message ?? "Authentication failed");
+                    }
+
+                    const {token, user} = await res.json();
+                    return {
+                        id: user.id.toString(),
+                        name: user.username,
+                        email: user.email,
+                        role: user.role,
+                        accessToken: token,
+                    };
+                } catch (error) {
+                    console.error("Authorization error:", error);
+                    return null;
+                }
+            },
+        }),
+    ],
+    callbacks: {
+        async jwt({token, user}) {
+            if (user) {
+                token.accessToken = user.accessToken;
+                token.role = user.role;
+                token.id = user.id;
+            }
+            return token;
+        },
+        async session({session, token}) {
+            if (session.user) {
+                session.user.id = token.id as string;
+                session.user.role = token.role as string;
+            }
+            session.accessToken = token.accessToken as string;
+            return session;
+        },
+    },
+    pages: {
+        signIn: "/login",
+    }
+} as NextAuthConfig;
+const nextAuthInstance = NextAuth(authOptions);
+
+export const {auth, signIn, signOut, handlers} = nextAuthInstance
