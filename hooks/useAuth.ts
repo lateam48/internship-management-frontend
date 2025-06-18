@@ -3,49 +3,43 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import {UserRole} from "@/types";
 
+/**
+ * A client-side hook to manage authentication status and role-based access.
+ * Returns the session, loading status, and utility functions for checking roles.
+ * Can optionally redirect if not authenticated or not authorized by role.
+ */
 export const useAuth = (options?: {
     redirectTo?: string;
-    allowedRoles?: UserRole[];
+    allowedRoles?: string[];
     redirectIfUnauthorized?: string;
 }) => {
     const { data: session, status } = useSession();
     const router = useRouter();
-
     const isLoading = status === "loading";
     const isAuthenticated = status === "authenticated";
-    const userRole = session?.user?.role as UserRole | undefined;
+    const userRole = session?.user?.role;
+
+    const { redirectTo, allowedRoles, redirectIfUnauthorized } = options || {};
 
     useEffect(() => {
-        if (isLoading) return;
+        if (!isLoading) {
+            if (redirectTo && !isAuthenticated) {
+                router.push(redirectTo);
+            }
 
-        // Handle authentication redirect
-        if (!isAuthenticated && options?.redirectTo) {
-            router.replace(options.redirectTo);
-            return;
-        }
-
-        // Handle authorization redirect
-        if (
-            isAuthenticated &&
-            options?.allowedRoles &&
-            options.redirectIfUnauthorized
-        ) {
-            const hasRequiredRole = userRole && options.allowedRoles.includes(userRole);
-
-            if (!hasRequiredRole) {
-                router.replace(options.redirectIfUnauthorized);
+            if (isAuthenticated && allowedRoles && redirectIfUnauthorized) {
+                if (!userRole || !allowedRoles.includes(userRole)) {
+                    router.push(redirectIfUnauthorized);
+                }
             }
         }
-    }, [isLoading, isAuthenticated, userRole, options, router]);
+    }, [isLoading, isAuthenticated, userRole, router, redirectTo, allowedRoles, redirectIfUnauthorized]);
 
-    // Role checking utility
-    const hasRole = (roles: UserRole | UserRole[]) => {
-        if (!userRole) return false;
-        return Array.isArray(roles)
-            ? roles.includes(userRole)
-            : roles === userRole;
+    const hasRole = (roles: string | string[]): boolean => {
+        if (!isAuthenticated || !userRole) return false;
+        const rolesArray = Array.isArray(roles) ? roles : [roles];
+        return rolesArray.includes(userRole);
     };
 
     return {

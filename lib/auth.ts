@@ -32,7 +32,7 @@ export const authOptions = {
                         id: user.id.toString(),
                         name: user.username,
                         email: user.email,
-                        role: user.role,
+                        role: (user.role as string)?.toUpperCase(),
                         accessToken: token,
                     };
                 } catch (error) {
@@ -46,7 +46,7 @@ export const authOptions = {
         async jwt({token, user}) {
             if (user) {
                 token.accessToken = user.accessToken;
-                token.role = user.role;
+                token.role = user.role?.toUpperCase();
                 token.id = user.id;
             }
             return token;
@@ -54,7 +54,7 @@ export const authOptions = {
         async session({session, token}) {
             if (session.user) {
                 session.user.id = token.id as string;
-                session.user.role = token.role as string;
+                session.user.role = (token.role as string)?.toUpperCase();
             }
             session.accessToken = token.accessToken as string;
             return session;

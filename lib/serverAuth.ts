@@ -19,12 +19,15 @@ export async function authorize(
     session: AuthSession | null,
     allowedRoles: UserRole[],
     redirectPath = "/unauthorized"
-) {
+): Promise<boolean> {
     const userRole = session?.user?.role as UserRole | undefined;
 
     if (!userRole || !allowedRoles.includes(userRole)) {
+        console.warn("Unauthorized access by role:", userRole);
         redirect(redirectPath);
+        return false;
     }
+    return true;
 }
 
 // Combined authentication + authorization
@@ -36,7 +39,7 @@ export async function getAuthenticatedUser(options?: {
     const session = await authenticate(options?.authRedirect);
 
     if (options?.allowedRoles) {
-        authorize(session, options.allowedRoles, options?.authzRedirect);
+        await authorize(session, options.allowedRoles, options?.authzRedirect);
     }
 
     return { session };

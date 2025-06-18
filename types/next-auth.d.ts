@@ -1,5 +1,5 @@
 import "next-auth";
-import type { Session } from "next-auth";
+import { Session } from "next-auth";
 
 declare module "next-auth" {
     interface User {
@@ -12,8 +12,9 @@ declare module "next-auth" {
     }
 
     interface Session {
-        user: User;
+        user?: User;
         accessToken?: string;
+        expires: string;
     }
 }
 
@@ -26,13 +27,12 @@ declare module "next-auth/jwt" {
 }
 
 
-export type AuthSession = {
-    user: {
-        id: string;
-        name?: string | null;
-        email?: string | null;
-        image?: string | null;
-        role?: UserRole;
-    };
-    accessToken?: string;
-} | null;
+export type AuthSession = Session | null;
+
+export type AuthenticateResult =
+    | { session: Session }
+    | { error: "UNAUTHENTICATED"; redirectPath: string };
+
+export type AuthorizeResult =
+    | { authorized: true }
+    | { error: "UNAUTHORIZED"; redirectPath: string };

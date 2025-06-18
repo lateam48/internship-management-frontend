@@ -2,11 +2,9 @@ import {LogoutButton} from "@/components/global";
 import {getAuthenticatedUser} from "@/lib/serverAuth";
 
 export default async function DashboardPage() {
-    const {session} = await getAuthenticatedUser(
-        {
-            authzRedirect: "/login"
-        }
-    );
+    const {session} = await getAuthenticatedUser({
+        authRedirect: "/login"
+    });
 
     return (
         <section className="grid place-content-center h-screen gap-4">
