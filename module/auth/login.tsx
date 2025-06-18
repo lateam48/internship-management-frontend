@@ -61,6 +61,7 @@ export function LoginForm() {
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
                                     <Input
+                                        type={"email"}
                                         placeholder="admin@admin.com"
                                         {...field}
                                         disabled={loading}

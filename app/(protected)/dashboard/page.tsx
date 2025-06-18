@@ -1,13 +1,12 @@
-import {redirect} from "next/navigation";
-import {auth} from "@/lib/auth";
 import {LogoutButton} from "@/components/global";
+import {getAuthenticatedUser} from "@/lib/serverAuth";
 
 export default async function DashboardPage() {
-    const session = await auth();
-
-    if (!session) {
-        redirect("/login");
-    }
+    const {session} = await getAuthenticatedUser(
+        {
+            authzRedirect: "/login"
+        }
+    );
 
     return (
         <section className="grid place-content-center h-screen gap-4">

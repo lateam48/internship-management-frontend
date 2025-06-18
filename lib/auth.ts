@@ -1,8 +1,9 @@
 import NextAuth, {NextAuthConfig} from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import getEnv from "@/lib/env";
 
 export const authOptions = {
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: getEnv().authSecret,
     session: {
         strategy: "jwt",
         maxAge: 24 * 60 * 60,
@@ -15,7 +16,7 @@ export const authOptions = {
             },
             authorize: async (credentials) => {
                 try {
-                    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+                    const res = await fetch(`${getEnv().apiUrl}/auth/login`, {
                         method: "POST",
                         body: JSON.stringify(credentials),
                         headers: {"Content-Type": "application/json"}
