@@ -13,7 +13,7 @@ import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Info, User, GraduationCap, Shield, Eye, EyeOff } from "lucide-react"
-import { SubmitButton } from "@/components/global/submit-button"
+import { SubmitButton } from "@/components/global"
 
 const LoginSchema = z.object({
     email: z.string().email("Valid email is required"),
@@ -60,7 +60,7 @@ export function LoginForm() {
             }
 
             if (result?.ok) {
-                toast("🎉 Connexion réussie!", {
+                toast.success("🎉 Connexion réussie!", {
                     description: "Bienvenue sur Grady!",
                 })
                 router.push("/dashboard")
