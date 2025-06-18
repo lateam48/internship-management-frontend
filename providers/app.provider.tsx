@@ -1,4 +1,4 @@
-import {ThemeProvider} from "@/providers";
+import {ThemeProvider , QueryProvider} from "@/providers";
 import { Toaster } from "@/components/ui/sonner";
 
 export function AppProvider({ children }: Readonly<{ children: React.ReactNode; }>) {
@@ -9,8 +9,8 @@ export function AppProvider({ children }: Readonly<{ children: React.ReactNode; 
             enableSystem
             disableTransitionOnChange
         >
-            {children}
-            <Toaster position={"top-right"} richColors={true} />
+            <QueryProvider>{children}</QueryProvider>
+            <Toaster position={"bottom-right"} richColors={true} closeButton={true} />
         </ThemeProvider>
     )
 }

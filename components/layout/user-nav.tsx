@@ -17,7 +17,7 @@ interface UserNavProps {
     session: AuthSession
 }
 
-export function UserNav({ session }: UserNavProps) {
+export function UserNav({ session }: Readonly<UserNavProps>) {
     const user = session?.user
 
     if (!user) return null
@@ -27,14 +27,14 @@ export function UserNav({ session }: UserNavProps) {
             ?.split(" ")
             .map((n) => n[0])
             .join("")
-            .toUpperCase() || "U"
+            .toUpperCase() ?? "U"
 
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.image || ""} alt={user.name || ""} />
+                        <AvatarImage src={user.image ?? ""} alt={user.name ?? ""} />
                         <AvatarFallback>{initials}</AvatarFallback>
                     </Avatar>
                 </Button>
