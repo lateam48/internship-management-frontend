@@ -1,6 +1,6 @@
 import NextAuth, {NextAuthConfig} from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import getEnv from "@/lib/env";
+import {getEnv} from "@/lib/env";
 
 export const authOptions = {
     secret: getEnv().authSecret,

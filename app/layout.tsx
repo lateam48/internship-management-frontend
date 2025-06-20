@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Grade Management",
-  description: "This is grade management app build by 48 students",
+  title: "Internship Management",
+  description: "This is internship management app build by 48 students",
 };
 
 export default function RootLayout({
