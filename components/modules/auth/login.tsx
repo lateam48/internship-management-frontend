@@ -78,8 +78,8 @@ export function LoginForm() {
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-muted/30">
-            <div className="w-full max-w-md space-y-6">
-                <Card className="shadow-lg">
+            <div className="w-full max-w-md md:max-w-full flex flex-col md:flex-row md:justify-center gap-6">
+                <Card className="shadow-lg  w-full md:max-w-md grid items-center">
                     <CardHeader className="space-y-1 text-center">
                         <CardTitle className="text-2xl font-bold">Connexion</CardTitle>
                         <CardDescription>Connectez-vous à votre compte StageLink Cameroun</CardDescription>
