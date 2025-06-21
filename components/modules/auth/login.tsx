@@ -12,7 +12,7 @@ import { toast } from "sonner"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { Info, User, GraduationCap, Shield, Eye, EyeOff } from "lucide-react"
+import { Info, User, GraduationCap, Shield, Eye, EyeOff, Briefcase } from "lucide-react"
 import { SubmitButton } from "@/components/global"
 
 const LoginSchema = z.object({
@@ -30,6 +30,7 @@ export function LoginForm() {
             name: "Dr. Françoise Atangana",
             icon: User,
         },
+        { role: "Entreprise", email: "company@company.com", password: "password", name: "Afriland First Bank", icon: Briefcase },
         { role: "Admin", email: "admin@admin.com", password: "password", name: "Paul Nkomo", icon: Shield },
     ]
     const [showPassword, setShowPassword] = useState(false)
@@ -61,13 +62,14 @@ export function LoginForm() {
 
             if (result?.ok) {
                 toast.success("🎉 Connexion réussie!", {
-                    description: "Bienvenue sur Grady!",
+                    description: "Bienvenue sur StageLink Cameroun!",
                 })
                 router.push("/dashboard")
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : "Une erreur est survenue"
             toast.error("Authentication Failed", {
-                description: error.name === "CredentialsSignin" ? "Email ou mot de passe incorrect" : "Une erreur est survenue",
+                description: errorMessage === "CredentialsSignin" ? "Email ou mot de passe incorrect" : "Une erreur est survenue",
             })
         } finally {
             setLoading(false)
@@ -80,7 +82,7 @@ export function LoginForm() {
                 <Card className="shadow-lg">
                     <CardHeader className="space-y-1 text-center">
                         <CardTitle className="text-2xl font-bold">Connexion</CardTitle>
-                        <CardDescription>Connectez-vous à votre compte Grady</CardDescription>
+                        <CardDescription>Connectez-vous à votre compte StageLink Cameroun</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <Form {...form}>
@@ -154,7 +156,7 @@ export function LoginForm() {
                             <Info className="h-4 w-4 text-muted-foreground" />
                             <CardTitle className="text-lg">Comptes de démonstration</CardTitle>
                         </div>
-                        <CardDescription>Utilisez ces comptes pour tester l'application</CardDescription>
+                        <CardDescription>Utilisez ces comptes pour tester l&apos;application</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                         {testAccounts.map((account, index) => {

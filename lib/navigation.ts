@@ -13,12 +13,14 @@ import {
   Book,
   Hash,
   LucideListChecks,
+  Briefcase,
+  Building,
 } from "lucide-react"
 
 export interface NavigationItem {
   title: string
   href: string
-  icon: any
+  icon: React.ComponentType<{ className?: string }>
   badge?: string
   roles: UserRole[]
 }
@@ -28,7 +30,7 @@ export const navigationConfig: NavigationItem[] = [
         title: "Tableau de bord",
         href: "/dashboard",
         icon: LayoutDashboard,
-        roles: [UserRoles.ADMIN, UserRoles.TEACHER, UserRoles.STUDENT],
+        roles: [UserRoles.ADMIN, UserRoles.TEACHER, UserRoles.STUDENT, UserRoles.COMPANY],
     },
     // Admin specific
     {
@@ -111,12 +113,43 @@ export const navigationConfig: NavigationItem[] = [
         icon: UserCheck,
         roles: [UserRoles.STUDENT],
     },
+    // Company specific
+    {
+        title: "Mes Offres",
+        href: "/dashboard/offers",
+        icon: Briefcase,
+        roles: [UserRoles.COMPANY],
+    },
+    {
+        title: "Candidatures",
+        href: "/dashboard/applications",
+        icon: Users,
+        roles: [UserRoles.COMPANY],
+    },
+    {
+        title: "Stages Actifs",
+        href: "/dashboard/internships",
+        icon: Building,
+        roles: [UserRoles.COMPANY],
+    },
+    {
+        title: "Statistiques",
+        href: "/dashboard/analytics",
+        icon: BarChart3,
+        roles: [UserRoles.COMPANY],
+    },
+    {
+        title: "Profil Entreprise",
+        href: "/dashboard/profile",
+        icon: Building,
+        roles: [UserRoles.COMPANY],
+    },
     // Common
     {
         title: "Paramètres",
         href: "/dashboard/settings",
         icon: Settings,
-        roles: [UserRoles.ADMIN, UserRoles.TEACHER, UserRoles.STUDENT],
+        roles: [UserRoles.ADMIN, UserRoles.TEACHER, UserRoles.STUDENT, UserRoles.COMPANY],
     },
 ]
 

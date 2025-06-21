@@ -14,10 +14,12 @@ export function HomeNav() {
                     <div className="flex items-center space-x-4">
                         <ModeToggle />
                         <Link href="/login">
-                            <Button variant="outline">Connexion</Button>
+                            <Button variant="outline" className="btn-animate">
+                                Connexion
+                            </Button>
                         </Link>
-                        <Link href="/register">
-                            <Button>S'inscrire</Button>
+                        <Link href="/dashboard">
+                            <Button className="btn-animate">S&apos;inscrire</Button>
                         </Link>
                     </div>
                 </div>

@@ -11,7 +11,7 @@ import {
 
 export function Home() {
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
             <HomeNav />
             <HomeHero />
             <HomeStats />

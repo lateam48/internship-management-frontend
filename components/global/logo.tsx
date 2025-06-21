@@ -1,11 +1,15 @@
 import Link from "next/link";
+import { Briefcase } from "lucide-react";
 
 export function Logo() {
     return (
-        <Link href="/">
-            <h1>
-                <span className={"text-primary text-xl font-medium"}>Grady.</span>
-            </h1>
+        <Link href="/" className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <Briefcase className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <span className="text-xl font-bold text-primary">
+                StageLink Cameroun
+            </span>
         </Link>
     )
 }

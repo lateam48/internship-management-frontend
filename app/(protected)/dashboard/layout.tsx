@@ -4,14 +4,15 @@ import { UserRoles } from "@/types"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { AppSidebar, Navbar } from "@/components/layout"
 
-export default async function DashboardLayout({children, admin, teacher, student}: Readonly<{
+export default async function DashboardLayout({children, admin, teacher, student, company}: Readonly<{
     children: React.ReactNode
     admin: React.ReactNode
     teacher: React.ReactNode
     student: React.ReactNode
+    company: React.ReactNode
 }>) {
     const { session } = await getAuthenticatedUser({
-        allowedRoles: [UserRoles.ADMIN, UserRoles.TEACHER, UserRoles.STUDENT],
+        allowedRoles: [UserRoles.ADMIN, UserRoles.TEACHER, UserRoles.STUDENT, UserRoles.COMPANY],
         authRedirect: "/login",
         authzRedirect: "/unauthorized",
     })
@@ -25,6 +26,8 @@ export default async function DashboardLayout({children, admin, teacher, student
                 return teacher
             case UserRoles.STUDENT:
                 return student
+            case UserRoles.COMPANY:
+                return company
             default:
                 return children
         }

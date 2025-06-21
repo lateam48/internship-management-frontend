@@ -12,8 +12,8 @@ export function HomeFooter() {
                             <Logo />
                         </div>
                         <p className="text-muted-foreground mb-4">
-                            Plateforme moderne de gestion des notes et résultats académiques. Centralisez, automatisez et sécurisez la
-                            gestion des résultats de votre institution.
+                            La plateforme de référence pour les stages étudiants au Cameroun. Connectons les talents de demain avec
+                            les entreprises d&apos;aujourd&apos;hui.
                         </p>
                         <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                             <MapPin className="h-4 w-4" />
@@ -21,16 +21,16 @@ export function HomeFooter() {
                         </div>
                     </div>
                     <div>
-                        <h3 className="font-semibold text-foreground mb-4">Accès rapide</h3>
+                        <h3 className="font-semibold text-foreground mb-4">Liens utiles</h3>
                         <ul className="space-y-2 text-sm text-muted-foreground">
                             <li>
-                                <Link href="/login" className="hover:text-primary">
-                                    Connexion
+                                <Link href="/dashboard" className="hover:text-primary">
+                                    S&apos;inscrire
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/dashboard" className="hover:text-primary">
-                                    Tableau de bord
+                                <Link href="/login" className="hover:text-primary">
+                                    Se connecter
                                 </Link>
                             </li>
                             <li>
@@ -50,17 +50,17 @@ export function HomeFooter() {
                         <ul className="space-y-2 text-sm text-muted-foreground">
                             <li>
                                 <Link href="#" className="hover:text-primary">
-                                    Centre d'aide
+                                    Centre d&apos;aide
                                 </Link>
                             </li>
                             <li>
                                 <Link href="#" className="hover:text-primary">
-                                    Documentation
+                                    FAQ
                                 </Link>
                             </li>
                             <li>
                                 <Link href="#" className="hover:text-primary">
-                                    Conditions d'utilisation
+                                    Conditions d&apos;utilisation
                                 </Link>
                             </li>
                             <li>
@@ -72,7 +72,7 @@ export function HomeFooter() {
                     </div>
                 </div>
                 <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-                    <p>&copy; {(new Date()).getFullYear()} Grady. Tous droits réservés.</p>
+                    <p>&copy; {(new Date()).getFullYear()} StageLink Cameroun. Tous droits réservés.</p>
                 </div>
             </div>
         </footer>
