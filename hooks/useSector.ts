@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Sector } from '../types/index';
+import { Sector } from '@/types';
 import { sectorService } from '@/services/sectorService';
 import { queryClient } from '@/providers';
 import { SectorsCacheKeys } from '@/services/const';

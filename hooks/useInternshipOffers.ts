@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { OfferStatus } from '../types/index';
+import { OfferStatus } from '@/types';
 import { internshipOfferService } from '@/services/offerService';
 import { InternshipOffersCacheKeys } from '@/services/const';
 export const useInternshipOffers = (filters?: {

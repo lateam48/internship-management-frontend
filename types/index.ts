@@ -1,3 +1,5 @@
+import type { Sector } from './sector';
+
 export const UserRoles = {
     ADMIN: "ADMIN",
     COMPANY: "COMPANY",
@@ -18,12 +20,6 @@ export interface UserResponseData{
 }
 
 export type ApplicationStatus = "ACCEPTED" | "PENDING" | "REJECTED"
-export type ConventionStatus =
-  | "PENDING"
-  | "VALIDATED_BY_TEACHER"
-  | "APPROVED_BY_ADMIN"
-  | "REJECTED_BY_TEACHER"
-  | "REJECTED_BY_ADMIN"
 export type NotificationType =
   | "NEW_OFFER"
   | "NEW_APPLICATION"
@@ -34,11 +30,6 @@ export type NotificationType =
 export type NotificationChannel = "IN_APP" | "EMAIL"
 export type NotificationStatus = "UNREAD" | "READ" | "ARCHIVED"
 export type OfferStatus = "ACTIVE" | "INACTIVE" | "COMPLETED" | "ALL"
-
-export interface Sector {
-  id: number
-  name: string
-}
 
 export interface User {
   id: number
@@ -79,31 +70,6 @@ export interface AuthResponse {
   user: User
 }
 
-export interface GetInternshipOfferResponseDTO {
-  id: number
-  title: string
-  description: string
-  sector: Sector
-  location: string
-  skills: string[]
-  length: number
-  companyName: string
-  companyId: number
-  status: string
-  createdAt: string
-  updatedAt: string
-}
-
-export interface CreateInternshipOfferRequestDTO {
-  title: string
-  description: string
-  sector: Sector
-  location: string
-  skills: string[]
-  length: number
-  companyId: number
-}
-
 export interface ApplicationResponseDTO {
   id: number
   firstName: string
@@ -120,38 +86,6 @@ export interface CreateApplicationDTO {
   studentId: number
   coverLetter: string
   cvFile?: File
-}
-
-export interface ConventionResponseDTO {
-  id: number
-  title: string
-  description: string
-  location: string
-  skills: string[]
-  length: number
-  companyName: string
-  studentName: string
-  startDate: string
-  endDate: string
-  status: ConventionStatus
-  pdfPath: string
-  signedPdfPath: string
-  applicationId: number
-  companyId: number
-  studentId: number
-}
-
-export interface UpdateConventionByCompanyDTO {
-  id: number
-  title: string
-  description: string
-  location: string
-  skills: string[]
-  length: number
-  companyId: number
-  studentId: number
-  startDate: string
-  endDate: string
 }
 
 export interface NotificationRecipient {
@@ -193,3 +127,7 @@ export interface CreateNotificationDTO {
   sector?: Sector
   userIds?: number[]
 }
+
+export * from './sector';
+export * from './offer';
+export * from './convention';

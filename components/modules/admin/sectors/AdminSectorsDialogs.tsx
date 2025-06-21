@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Sector } from "@/types"
-import { CreateSectorMutation, UpdateSectorMutation, DeleteSectorMutation } from "@/types/mutation"
+import { CreateSectorMutation, UpdateSectorMutation, DeleteSectorMutation } from "@/types/sector"
 
 export function AdminSectorsDialogs({
   isCreateDialogOpen,
