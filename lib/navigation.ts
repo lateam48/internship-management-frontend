@@ -34,47 +34,30 @@ export const navigationConfig: NavigationItem[] = [
     },
     // Admin specific
     {
+        title: "Conventions",
+        href: "/dashboard/conventions",
+        icon: Book,
+        roles: [UserRoles.ADMIN],
+    },
+    {
+        title: "Offres",
+        href: "/dashboard/offers",
+        icon: LucideListChecks,
+        roles: [UserRoles.ADMIN],
+    },
+    {
+        title: "Secteurs",
+        href: "/dashboard/sectors",
+        icon: Hash,
+        roles: [UserRoles.ADMIN],
+    },
+    {
         title: "Utilisateurs",
         href: "/dashboard/users",
         icon: Users,
         roles: [UserRoles.ADMIN],
     },
-    {
-        title: "Filieres",
-        href: "/dashboard/majors",
-        icon: Book,
-        roles: [UserRoles.ADMIN],
-    },
-    {
-        title: "Niveaux",
-        href: "/dashboard/levels",
-        icon: Hash,
-        roles: [UserRoles.ADMIN],
-    },
-    {
-        title: "Semestres",
-        href: "/dashboard/semesters",
-        icon: LucideListChecks,
-        roles: [UserRoles.ADMIN],
-    },
-    {
-      title: "Cours",
-      href: "/dashboard/courses",
-      icon: BookOpen,
-      roles: [UserRoles.ADMIN],
-    },
-    {
-      title: "Notes",
-      href: "/dashboard/grades",
-      icon: FileText,
-      roles: [UserRoles.ADMIN],
-    },
-    {
-        title: "Transcripts",
-        href: "/dashboard/transcripts",
-        icon: FileText,
-        roles: [UserRoles.ADMIN],
-    },
+    
     // Teacher specific
     {
         title: "Cours",
