@@ -1,4 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useMutation } from "@tanstack/react-query"
+import { queryClient } from "@/providers"
 import { toast } from "sonner"
 import conventionService from "@/services/conventionService"
 
@@ -82,8 +83,6 @@ export const useCheckPdfAvailability = (conventionId: number) => {
 
 // Hook pour créer une convention à partir d'une application
 export const useCreateConventionFromApplication = () => {
-  const queryClient = useQueryClient()
-
   return useMutation({
     mutationFn: (applicationId: number) =>
       conventionService.createConventionFromApplication(applicationId),
@@ -115,8 +114,6 @@ export const useCreateConventionFromApplication = () => {
 
 // Hook pour valider une convention par l'enseignant
 export const useValidateConventionByTeacher = () => {
-  const queryClient = useQueryClient()
-
   return useMutation({
     mutationFn: (conventionId: number) =>
       conventionService.validateConventionByTeacher(conventionId),
@@ -148,8 +145,6 @@ export const useValidateConventionByTeacher = () => {
 
 // Hook pour rejeter une convention par l'enseignant
 export const useRejectConventionByTeacher = () => {
-  const queryClient = useQueryClient()
-
   return useMutation({
     mutationFn: ({ id, reason }: { id: number; reason: string }) =>
       conventionService.rejectConventionByTeacher(id, { reason }),
@@ -181,8 +176,6 @@ export const useRejectConventionByTeacher = () => {
 
 // Hook pour approuver une convention par l'admin
 export const useApproveConventionByAdmin = () => {
-  const queryClient = useQueryClient()
-
   return useMutation({
     mutationFn: (conventionId: number) =>
       conventionService.approveConventionByAdmin(conventionId),
@@ -198,7 +191,7 @@ export const useApproveConventionByAdmin = () => {
       let errorMessage = "Impossible d'approuver la convention"
       
       if (error.response?.status === 403) {
-        errorMessage = "Vous n'êtes pas autorisé à approuver cette convention."
+        errorMessage = "Vous n'êtes pas autorisé à approuver cette convention. Vérifiez que vous avez les droits d'administrateur."
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message
       } else if (error.message) {
@@ -214,8 +207,6 @@ export const useApproveConventionByAdmin = () => {
 
 // Hook pour rejeter une convention par l'admin
 export const useRejectConventionByAdmin = () => {
-  const queryClient = useQueryClient()
-
   return useMutation({
     mutationFn: ({ id, reason }: { id: number; reason: string }) =>
       conventionService.rejectConventionByAdmin(id, { reason }),
@@ -231,7 +222,7 @@ export const useRejectConventionByAdmin = () => {
       let errorMessage = "Impossible de rejeter la convention"
       
       if (error.response?.status === 403) {
-        errorMessage = "Vous n'êtes pas autorisé à rejeter cette convention."
+        errorMessage = "Vous n'êtes pas autorisé à rejeter cette convention. Vérifiez que vous avez les droits d'administrateur."
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message
       } else if (error.message) {
@@ -247,8 +238,6 @@ export const useRejectConventionByAdmin = () => {
 
 // Hook pour mettre à jour une convention par l'entreprise
 export const useUpdateConventionByCompany = () => {
-  const queryClient = useQueryClient()
-
   return useMutation({
     mutationFn: ({ id, companyId, data }: { id: number; companyId: number; data: Record<string, unknown> }) =>
       conventionService.updateConventionByCompany(id, companyId, data),
@@ -256,13 +245,21 @@ export const useUpdateConventionByCompany = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["conventions"] })
       toast.success("✅ Convention mise à jour", {
-        description: "La convention a été mise à jour avec succès.",
+        description: "La convention a été mise à jour par l'entreprise.",
       })
     },
 
     onError: (error: ApiError) => {
-      toast.error("❌ Erreur", {
-        description: error.message || "Impossible de mettre à jour la convention",
+      let errorMessage = "Impossible de mettre à jour la convention"
+      
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+
+      toast.error("❌ Erreur de mise à jour", {
+        description: errorMessage,
       })
     },
   })
@@ -274,44 +271,19 @@ export const useDownloadConventionPdf = () => {
     mutationFn: (conventionId: number) =>
       conventionService.downloadConventionPdf(conventionId),
 
-    onMutate: () => {
-      toast.loading("📄 Téléchargement en cours", {
-        description: "Préparation du PDF...",
+    onSuccess: () => {
+      toast.success("📄 PDF téléchargé", {
+        description: "Le PDF de la convention a été téléchargé avec succès.",
       })
-    },
-
-    onSuccess: (blob, conventionId) => {
-      try {
-        // Créer un lien de téléchargement
-        const url = window.URL.createObjectURL(blob)
-        const link = document.createElement("a")
-        link.href = url
-        link.setAttribute("download", `convention_${conventionId}.pdf`)
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        window.URL.revokeObjectURL(url)
-
-        toast.success("📄 PDF téléchargé", {
-          description: "Le PDF de la convention a été téléchargé avec succès.",
-        })
-      } catch (downloadError) {
-        console.error("Erreur lors du téléchargement:", downloadError)
-        toast.error("❌ Erreur de téléchargement", {
-          description: "Impossible de télécharger le fichier PDF",
-        })
-      }
     },
 
     onError: (error: ApiError) => {
       let errorMessage = "Impossible de télécharger le PDF"
       
-      if (error.response?.status === 403) {
-        errorMessage = "Vous n'êtes pas autorisé à télécharger cette convention."
-      } else if (error.response?.status === 404) {
-        errorMessage = "Convention non trouvée ou PDF non disponible."
-      } else if (error.response?.status === 500) {
-        errorMessage = "Erreur serveur lors de la génération du PDF."
+      if (error.response?.status === 404) {
+        errorMessage = "Le PDF de cette convention n'est pas encore disponible."
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message
       } else if (error.message) {
         errorMessage = error.message
       }
@@ -323,10 +295,8 @@ export const useDownloadConventionPdf = () => {
   })
 }
 
-// Hook pour uploader un PDF signé
+// Hook pour uploader le PDF signé
 export const useUploadSignedPdf = () => {
-  const queryClient = useQueryClient()
-
   return useMutation({
     mutationFn: ({ id, file }: { id: number; file: File }) =>
       conventionService.uploadSignedPdf(id, file),
@@ -339,8 +309,16 @@ export const useUploadSignedPdf = () => {
     },
 
     onError: (error: ApiError) => {
+      let errorMessage = "Impossible d'uploader le PDF signé"
+      
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+
       toast.error("❌ Erreur d'upload", {
-        description: error.message || "Impossible d'uploader le PDF signé",
+        description: errorMessage,
       })
     },
   })

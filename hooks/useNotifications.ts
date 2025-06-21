@@ -1,4 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { queryClient } from "@/providers";
 import { NotificationCacheKeys } from "./const";
 import { notificationService } from "@/services/notificationService";
 import { CreateNotificationDTO, NotificationDTO } from "@/types";
@@ -10,7 +11,6 @@ export const useNotifications = (params?: {
   unreadOnly?: boolean;
   status?: string;
 }) => {
-  const queryClient = useQueryClient();
   const { userId, notificationId, unreadOnly, status } = params || {};
 
   // Queries avec gestion sécurisée des paramètres
