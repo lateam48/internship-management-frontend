@@ -9,10 +9,187 @@ export type UserRole = (typeof UserRoles)[keyof typeof UserRoles];
 
 
 export interface UserResponseData{
-  id:number
-  username:string
-  email:string
-  firstName:string
-  lastName:string
-  role:UserRole
+    id:number
+    username:string
+    email:string
+    firstName:string
+    lastName:string
+    role:UserRole
+}
+
+export type ApplicationStatus = "ACCEPTED" | "PENDING" | "REJECTED"
+export type ConventionStatus =
+  | "PENDING"
+  | "VALIDATED_BY_TEACHER"
+  | "APPROVED_BY_ADMIN"
+  | "REJECTED_BY_TEACHER"
+  | "REJECTED_BY_ADMIN"
+export type NotificationType =
+  | "NEW_OFFER"
+  | "NEW_APPLICATION"
+  | "CONVENTION_VALIDATION"
+  | "ADMIN_APPROVAL"
+  | "CONVENTION_VALIDATION_REMINDER"
+  | "APPLICATION_DECISION_REMINDER"
+export type NotificationChannel = "IN_APP" | "EMAIL"
+export type NotificationStatus = "UNREAD" | "READ" | "ARCHIVED"
+export type OfferStatus = "ACTIVE" | "INACTIVE" | "COMPLETED" | "ALL"
+
+export interface Sector {
+  id: number
+  name: string
+}
+
+export interface User {
+  id: number
+  username: string
+  password: string
+  email: string
+  firstName: string
+  lastName: string
+  sector?: Sector
+  role: UserRole
+}
+
+export interface LoginRequest {
+  email: string
+  password: string
+}
+
+export interface RegisterRequest {
+  username: string
+  email: string
+  password: string
+  firstName: string
+  lastName: string
+  role: UserRole
+  sectorId?: number
+}
+
+export interface UpdateUserRequest {
+  username: string
+  email: string
+  firstName: string
+  lastName: string
+  role: UserRole
+  sectorId: number
+}
+export interface AuthResponse {
+  token: string
+  user: User
+}
+
+export interface GetInternshipOfferResponseDTO {
+  id: number
+  title: string
+  description: string
+  sector: Sector
+  location: string
+  skills: string[]
+  length: number
+  companyName: string
+  companyId: number
+  status: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateInternshipOfferRequestDTO {
+  title: string
+  description: string
+  sector: Sector
+  location: string
+  skills: string[]
+  length: number
+  companyId: number
+}
+
+export interface ApplicationResponseDTO {
+  id: number
+  firstName: string
+  lastName: string
+  offerTitle: string
+  status: ApplicationStatus
+  applicationDate: string
+  offerId: number
+  studentId: number
+}
+
+export interface CreateApplicationDTO {
+  offerId: number
+  studentId: number
+  coverLetter: string
+  cvFile?: File
+}
+
+export interface ConventionResponseDTO {
+  id: number
+  title: string
+  description: string
+  location: string
+  skills: string[]
+  length: number
+  companyName: string
+  studentName: string
+  startDate: string
+  endDate: string
+  status: ConventionStatus
+  pdfPath: string
+  signedPdfPath: string
+  applicationId: number
+  companyId: number
+  studentId: number
+}
+
+export interface UpdateConventionByCompanyDTO {
+  id: number
+  title: string
+  description: string
+  location: string
+  skills: string[]
+  length: number
+  companyId: number
+  studentId: number
+  startDate: string
+  endDate: string
+}
+
+export interface NotificationRecipient {
+  userId: number;
+  read: boolean;
+  readAt: string;
+}
+
+export interface MarkReadRequestDTO {
+  notificationIds: number[];
+  userId: number;
+}
+
+export interface ArchiveNotificationRequestDTO {
+  notificationId: number;
+  userId: number;
+}
+
+export interface NotificationDTO {
+  id: number
+  subject: string
+  content: string
+  type: NotificationType
+  status: NotificationStatus
+  channel: NotificationChannel
+  senderId: number
+  createdAt: string
+  recipients?: NotificationRecipient[]
+  read: boolean
+}
+
+export interface CreateNotificationDTO {
+  type: NotificationType
+  channel: NotificationChannel
+  subject: string
+  senderId: number
+  content: string
+  targetRole?: UserRole
+  sector?: Sector
+  userIds?: number[]
 }

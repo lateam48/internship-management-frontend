@@ -30,7 +30,8 @@ export const authOptions = {
                     const {token, user} = await res.json();
                     return {
                         id: user.id.toString(),
-                        name: user.username,
+                        firstName: user.firstName,
+                        lastName: user.lastName,
                         email: user.email,
                         role: (user.role as string)?.toUpperCase(),
                         accessToken: token,

@@ -3,11 +3,12 @@ import { Session } from "next-auth";
 
 declare module "next-auth" {
     interface User {
-        id: string;
-        name?: string | null;
-        email?: string | null;
-        image?: string | null;
-        role?: string;
+        id: string
+        role?: string
+        firstName: string
+        lastName: string
+        username: string
+        sector?: Sector
         accessToken?: string;
     }
 
