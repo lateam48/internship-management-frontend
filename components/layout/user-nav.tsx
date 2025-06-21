@@ -1,3 +1,4 @@
+"use client"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -23,7 +24,7 @@ export function UserNav({ session }: Readonly<UserNavProps>) {
     if (!user) return null
 
     const initials =
-        user.name
+        user.email
             ?.split(" ")
             .map((n) => n[0])
             .join("")

@@ -25,7 +25,7 @@ interface AppSidebarProps {
     session: AuthSession
 }
 
-export function AppSidebar({ session }: AppSidebarProps) {
+export function AppSidebar({ session }: Readonly<AppSidebarProps>) {
     const pathname = usePathname()
     const user = session?.user
 
@@ -33,18 +33,18 @@ export function AppSidebar({ session }: AppSidebarProps) {
 
     const navigation = getNavigationForRole(user.role as UserRole)
     const initials =
-        user.name
+        user.email
             ?.split(" ")
             .map((n) => n[0])
             .join("")
-            .toUpperCase() || "U"
+            .toUpperCase() ?? "U"
 
     return (
         <Sidebar>
             <SidebarHeader>
                 <div className="flex items-center gap-3 px-2 py-4">
                     <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.image || ""} alt={user.name || ""} />
+                        <AvatarImage src={user.image ?? ""} alt={user.name ?? ""} />
                         <AvatarFallback>{initials}</AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
