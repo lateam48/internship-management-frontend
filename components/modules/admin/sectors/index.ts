@@ -1,1 +1,5 @@
 export * from "./AdminSectors"
+export * from "./AdminSectorsHeader"
+export * from "./AdminSectorsStats"
+export * from "./AdminSectorsGrid"
+export * from "./AdminSectorsDialogs"
