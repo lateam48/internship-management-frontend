@@ -35,10 +35,10 @@ export function AdminUsers() {
 
   // Calculate role statistics
   const roleStats = {
-    ADMIN: users?.filter((u) => u.role === "ADMIN").length || 0,
-    TEACHER: users?.filter((u) => u.role === "TEACHER").length || 0,
-    COMPANY: users?.filter((u) => u.role === "COMPANY").length || 0,
-    STUDENT: users?.filter((u) => u.role === "STUDENT").length || 0,
+    ADMIN: users?.filter((u) => u.role === "ADMIN").length ?? 0,
+    TEACHER: users?.filter((u) => u.role === "TEACHER").length ?? 0,
+    COMPANY: users?.filter((u) => u.role === "COMPANY").length ?? 0,
+    STUDENT: users?.filter((u) => u.role === "STUDENT").length ?? 0,
   }
 
   const handleEdit = (user: User) => {
@@ -71,6 +71,7 @@ export function AdminUsers() {
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
         createUserMutation={createUserMutation}
+        sectors={sectors}
       />
       
       <AdminUsersEditDialog

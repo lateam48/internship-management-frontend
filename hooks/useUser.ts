@@ -23,9 +23,6 @@ export const useUser = ({ userId }: {
       queryClient.invalidateQueries({
         queryKey: [UsersCacheKeys.Users]
       })
-      toast.success("Utilisateur créée", {
-        description: "L'utlisateur a été publiée avec succès.",
-      })
     },
     onError: (error: ApiError) => {
       toast.error("Erreur", {
@@ -40,9 +37,6 @@ export const useUser = ({ userId }: {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [UsersCacheKeys.Users]
-      })
-      toast.success("Utilisateur mise à jour", {
-        description: "L'utlisateur a été mise à jour avec succès.",
       })
     },
     onError: (error: ApiError) => {

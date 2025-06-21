@@ -10,6 +10,7 @@ interface SubmitButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>
     loading?: boolean
     label?: string
     loadingText?: string
+    btnType?: "button" | "submit" | "reset"
     variant?: ButtonVariants["variant"]
     size?: ButtonVariants["size"]
     showSpinnerOnly?: boolean
@@ -27,6 +28,7 @@ export const SubmitButton = forwardRef<HTMLButtonElement, SubmitButtonProps>(
             showSpinnerOnly = false,
             disabled,
             children,
+            btnType = "submit",
             ...buttonProps
         },
         ref,
@@ -41,7 +43,7 @@ export const SubmitButton = forwardRef<HTMLButtonElement, SubmitButtonProps>(
                 return (
                     <div className="flex items-center gap-2">
                         <LoaderCircle className="h-4 w-4 animate-spin" />
-                        <span>{loadingText || label}</span>
+                        <span>{loadingText ?? label}</span>
                     </div>
                 )
             }
@@ -52,7 +54,7 @@ export const SubmitButton = forwardRef<HTMLButtonElement, SubmitButtonProps>(
         return (
             <Button
                 ref={ref}
-                type="submit"
+                type={btnType}
                 variant={variant}
                 size={size}
                 className={cn(className)}

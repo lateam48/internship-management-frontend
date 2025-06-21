@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner"
 import type { User, UserRole } from "@/types"
 import type { CreateUserMutation, UpdateUserMutation, DeleteUserMutation } from "@/types/user"
+import { SubmitButton } from "@/components/global"
 
 const userFormSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -28,9 +29,10 @@ interface AdminUsersCreateDialogProps {
   isOpen: boolean
   onClose: () => void
   createUserMutation: CreateUserMutation
+  sectors: { id: number; name: string }[]
 }
 
-export function AdminUsersCreateDialog({ isOpen, onClose, createUserMutation }: AdminUsersCreateDialogProps) {
+export function AdminUsersCreateDialog({ isOpen, onClose, createUserMutation, sectors }: AdminUsersCreateDialogProps) {
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
@@ -66,45 +68,45 @@ export function AdminUsersCreateDialog({ isOpen, onClose, createUserMutation }: 
           <DialogDescription>Add a new user to the system.</DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div>
+          <div className="space-y-1">
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" {...form.register("email")}/>
             {form.formState.errors.email && (
               <p className="text-destructive text-xs mt-1">{form.formState.errors.email.message}</p>
             )}
           </div>
-          <div>
+          <div className="space-y-1">
             <Label htmlFor="firstName">First Name</Label>
             <Input id="firstName" {...form.register("firstName")}/>
             {form.formState.errors.firstName && (
               <p className="text-destructive text-xs mt-1">{form.formState.errors.firstName.message}</p>
             )}
           </div>
-          <div>
+          <div className="space-y-1">
             <Label htmlFor="lastName">Last Name</Label>
             <Input id="lastName" {...form.register("lastName")}/>
             {form.formState.errors.lastName && (
               <p className="text-destructive text-xs mt-1">{form.formState.errors.lastName.message}</p>
             )}
           </div>
-          <div>
+          <div className="space-y-1">
             <Label htmlFor="username">Username</Label>
             <Input id="username" {...form.register("username")}/>
             {form.formState.errors.username && (
               <p className="text-destructive text-xs mt-1">{form.formState.errors.username.message}</p>
             )}
           </div>
-          <div>
+          <div className="space-y-1">
             <Label htmlFor="password">Password</Label>
             <Input id="password" type="password" {...form.register("password")}/>
             {form.formState.errors.password && (
               <p className="text-destructive text-xs mt-1">{form.formState.errors.password.message}</p>
             )}
           </div>
-          <div>
+          <div className="space-y-1">
             <Label htmlFor="role">Role</Label>
             <Select value={form.watch("role")} onValueChange={val => form.setValue("role", val as UserRole)}>
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a role" />
               </SelectTrigger>
               <SelectContent>
@@ -118,13 +120,32 @@ export function AdminUsersCreateDialog({ isOpen, onClose, createUserMutation }: 
               <p className="text-destructive text-xs mt-1">{form.formState.errors.role.message}</p>
             )}
           </div>
+          <div className="space-y-1">
+            <Label htmlFor="sector">Sector</Label>
+            <Select
+              value={String(form.watch("sectorId") ?? "")}
+              onValueChange={val => form.setValue("sectorId", Number(val))}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a sector" />
+              </SelectTrigger>
+              <SelectContent>
+                {sectors.map(sector => (
+                  <SelectItem key={sector.id} value={String(sector.id)}>
+                    {sector.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {form.formState.errors.sectorId && (
+              <p className="text-destructive text-xs mt-1">{form.formState.errors.sectorId.message}</p>
+            )}
+          </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={createUserMutation.isPending}>
-              {createUserMutation.isPending ? "Creating..." : "Create User"}
-            </Button>
+            <SubmitButton loading={createUserMutation.isPending} label="Create User" />
           </DialogFooter>
         </form>
       </DialogContent>
@@ -186,45 +207,45 @@ export function AdminUsersEditDialog({ isOpen, onClose, user, updateUserMutation
           <DialogDescription>Update user information.</DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div>
+          <div className="space-y-1">
             <Label htmlFor="edit-email">Email</Label>
             <Input id="edit-email" type="email" {...form.register("email")}/>
             {form.formState.errors.email && (
               <p className="text-destructive text-xs mt-1">{form.formState.errors.email.message}</p>
             )}
           </div>
-          <div>
+          <div className="space-y-1">
             <Label htmlFor="edit-firstName">First Name</Label>
             <Input id="edit-firstName" {...form.register("firstName")}/>
             {form.formState.errors.firstName && (
               <p className="text-destructive text-xs mt-1">{form.formState.errors.firstName.message}</p>
             )}
           </div>
-          <div>
+          <div className="space-y-1">
             <Label htmlFor="edit-lastName">Last Name</Label>
             <Input id="edit-lastName" {...form.register("lastName")}/>
             {form.formState.errors.lastName && (
               <p className="text-destructive text-xs mt-1">{form.formState.errors.lastName.message}</p>
             )}
           </div>
-          <div>
+          <div className="space-y-1">
             <Label htmlFor="edit-username">Username</Label>
             <Input id="edit-username" {...form.register("username")}/>
             {form.formState.errors.username && (
               <p className="text-destructive text-xs mt-1">{form.formState.errors.username.message}</p>
             )}
           </div>
-          <div>
+          <div className="space-y-1">
             <Label htmlFor="edit-password">Password</Label>
             <Input id="edit-password" type="password" {...form.register("password")}/>
             {form.formState.errors.password && (
               <p className="text-destructive text-xs mt-1">{form.formState.errors.password.message}</p>
             )}
           </div>
-          <div>
+          <div className="space-y-1">
             <Label htmlFor="edit-role">Role</Label>
             <Select value={form.watch("role")} onValueChange={val => form.setValue("role", val as UserRole)}>
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a role" />
               </SelectTrigger>
               <SelectContent>
@@ -238,13 +259,13 @@ export function AdminUsersEditDialog({ isOpen, onClose, user, updateUserMutation
               <p className="text-destructive text-xs mt-1">{form.formState.errors.role.message}</p>
             )}
           </div>
-          <div>
+          <div className="space-y-1">
             <Label htmlFor="edit-sector">Sector</Label>
             <Select
               value={String(form.watch("sectorId") ?? "")}
               onValueChange={val => form.setValue("sectorId", Number(val))}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a sector" />
               </SelectTrigger>
               <SelectContent>
@@ -263,9 +284,7 @@ export function AdminUsersEditDialog({ isOpen, onClose, user, updateUserMutation
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={updateUserMutation.isPending}>
-              {updateUserMutation.isPending ? "Updating..." : "Update User"}
-            </Button>
+            <SubmitButton loading={updateUserMutation.isPending} label="Update User" />
           </DialogFooter>
         </form>
       </DialogContent>
@@ -305,9 +324,7 @@ export function AdminUsersDeleteDialog({ isOpen, onClose, user, deleteUserMutati
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="button" variant="destructive" onClick={handleDelete} disabled={deleteUserMutation.isPending}>
-            {deleteUserMutation.isPending ? "Deleting..." : "Delete User"}
-          </Button>
+          <SubmitButton btnType="button" variant={"destructive"} onClick={handleDelete} loading={deleteUserMutation.isPending} label="Delete User" />
         </DialogFooter>
       </DialogContent>
     </Dialog>
