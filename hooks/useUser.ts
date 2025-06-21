@@ -1,10 +1,17 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { User, RegisterRequest, UpdateUserRequest } from '../types/index';
 import { userManagementService } from '@/services/userManagementService';
 import { queryClient } from '@/providers';
 import { UsersCacheKeys } from '@/services/const';
 
-import { toast } from './use-toast';
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+}
 
 export const useUser = ({ userId }: {
   userId?: User['id']
@@ -16,16 +23,13 @@ export const useUser = ({ userId }: {
       queryClient.invalidateQueries({
         queryKey: [UsersCacheKeys.Users]
       })
-      toast({
-        title: "Utilisateur créée",
+      toast.success("Utilisateur créée", {
         description: "L'utlisateur a été publiée avec succès.",
       })
     },
-    onError: (error: any) => {
-      toast({
-        title: "Erreur",
+    onError: (error: ApiError) => {
+      toast.error("Erreur", {
         description: error.response?.data?.message || "Impossible de créer l'utlisateur",
-        variant: "destructive",
       })
     }
   })
@@ -37,16 +41,13 @@ export const useUser = ({ userId }: {
       queryClient.invalidateQueries({
         queryKey: [UsersCacheKeys.Users]
       })
-      toast({
-        title: "Utilisateur mise à jour",
+      toast.success("Utilisateur mise à jour", {
         description: "L'utlisateur a été mise à jour avec succès.",
       })
     },
-    onError: (error: any) => {
-      toast({
-        title: "Erreur",
+    onError: (error: ApiError) => {
+      toast.error("Erreur", {
         description: error.response?.data?.message || "Impossible de mettre à jour l'utilisateur",
-        variant: "destructive",
       })
     }
   })

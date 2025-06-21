@@ -1,7 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import applicationService from "@/services/applicationService";
 import { apiClient } from "@/lib/axios";
+
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+  message?: string;
+}
 
 export const useApplication = () => {
   const queryClient = useQueryClient();
@@ -42,17 +51,13 @@ export const useApplication = () => {
     mutationFn: (applicationId: number) =>
       applicationService.getApplicationBundle(applicationId),
     onSuccess: () => {
-      toast({
-        title: "🚀 Téléchargement initié",
+      toast.success("🚀 Téléchargement initié", {
         description: "Le téléchargement du bundle d'application a commencé.",
       });
     },
-    onError: (error: Error) => {
-      toast({
-        title: "❌ Erreur de téléchargement",
-        description:
-          error.message || "Échec du téléchargement du bundle d'application.",
-        variant: "destructive",
+    onError: (error: ApiError) => {
+      toast.error("❌ Erreur de téléchargement", {
+        description: error.message || "Échec du téléchargement du bundle d'application.",
       });
     },
   });
@@ -79,17 +84,14 @@ export const useApplication = () => {
 
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["applications"] });
-        toast({
-          title: "🎉 Application Submitted",
+        toast.success("🎉 Application Submitted", {
           description: "Your application was successfully submitted.",
         });
       },
 
-      onError: (error: any) => {
-        toast({
-          title: "❌ Error",
+      onError: (error: ApiError) => {
+        toast.error("❌ Error", {
           description: error.message || "Failed to submit the application.",
-          variant: "destructive",
         });
       },
     });
@@ -120,8 +122,7 @@ export const useApplication = () => {
 
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["applications"] });
-        toast({
-          title: "✅ Application Updated",
+        toast.success("✅ Application Updated", {
           description: "The application was successfully updated.",
         });
       },
@@ -137,8 +138,7 @@ export const useApplication = () => {
         queryClient.invalidateQueries({ queryKey: ["applications"] });
         const statusText = status === "ACCEPTED" ? "accepted" : "rejected";
         const emoji = status === "ACCEPTED" ? "✅" : "❌";
-        toast({
-          title: `${emoji} Application ${statusText}`,
+        toast.success(`${emoji} Application ${statusText}`, {
           description: `The application status has been updated to ${status}.`,
         });
       },
@@ -152,8 +152,7 @@ export const useApplication = () => {
 
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["applications"] });
-        toast({
-          title: "🗑️ Application Deleted",
+        toast.success("🗑️ Application Deleted", {
           description: "The application has been successfully deleted.",
         });
       },
@@ -169,16 +168,13 @@ export const useApplication = () => {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["applications"] });
         queryClient.invalidateQueries({ queryKey: ["conventions"] });
-        toast({
-          title: "✅ Convention créée",
+        toast.success("✅ Convention créée", {
           description: "La convention a été créée avec succès.",
         });
       },
-      onError: (error: any) => {
-        toast({
-          title: "❌ Erreur",
+      onError: (error: ApiError) => {
+        toast.error("❌ Erreur", {
           description: error.message || "Échec de la création de la convention.",
-          variant: "destructive",
         });
       },
     });

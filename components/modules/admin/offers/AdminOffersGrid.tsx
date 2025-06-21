@@ -123,7 +123,7 @@ export function AdminOffersGrid({ offers, isLoading }: AdminOffersGridProps) {
               )}
 
               <div className="pt-2">
-                <Link href={`/admin/offers/${offer.id}`}>
+                <Link href={`/dashboard/offers/${offer.id}`}>
                   <Button variant="outline" size="sm" className="w-full">
                     <Eye className="h-4 w-4 mr-2" />
                     Voir les détails

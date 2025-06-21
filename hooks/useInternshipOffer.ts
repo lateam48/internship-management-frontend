@@ -1,11 +1,19 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 import { InternshipOffersCacheKeys } from "@/services/const";
 import { queryClient } from "@/providers";
-import { toast } from "@/hooks/use-toast";
 
 import { internshipOfferService } from '../services/offerService';
 import { CreateInternshipOfferRequestDTO, GetInternshipOfferResponseDTO } from '../types/index';
+
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+}
 
 export const useInternshipOffer = ({ internshipOfferId }: {
   internshipOfferId?: GetInternshipOfferResponseDTO['id']
@@ -17,16 +25,13 @@ export const useInternshipOffer = ({ internshipOfferId }: {
       queryClient.invalidateQueries({
         queryKey: [InternshipOffersCacheKeys.InternshipOffers]
       })
-      toast({
-        title: "Offre créée",
+      toast.success("Offre créée", {
         description: "L'offre de stage a été publiée avec succès.",
       })
     },
-    onError: (error: any) => {
-      toast({
-        title: "Erreur",
-        description: error.response?.data?.message || "Impossible de créer l'offre",
-        variant: "destructive",
+    onError: (error: ApiError) => {
+      toast.error("Erreur", {
+        description: error.response?.data?.message ?? "Impossible de créer l'offre",
       })
     }
   })
@@ -45,16 +50,13 @@ export const useInternshipOffer = ({ internshipOfferId }: {
       queryClient.invalidateQueries({
         queryKey: [InternshipOffersCacheKeys.InternshipOffers]
       })
-      toast({
-        title: "Offre mise à jour",
+      toast.success("Offre mise à jour", {
         description: "L'offre de stage a été mise à jour avec succès.",
       })
     },
-    onError: (error: any) => {
-      toast({
-        title: "Erreur",
-        description: error.response?.data?.message || "Impossible de mettre à jour l'offre",
-        variant: "destructive",
+    onError: (error: ApiError) => {
+      toast.error("Erreur", {
+        description: error.response?.data?.message ?? "Impossible de mettre à jour l'offre",
       })
     }
   })
@@ -64,20 +66,17 @@ export const useInternshipOffer = ({ internshipOfferId }: {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [InternshipOffersCacheKeys.InternshipOffers]
-      }),
-        queryClient.invalidateQueries({
-          queryKey: [InternshipOffersCacheKeys.InternshipOffer]
-        })
-      toast({
-        title: "Offre activée",
+      })
+      queryClient.invalidateQueries({
+        queryKey: [InternshipOffersCacheKeys.InternshipOffer]
+      })
+      toast.success("Offre activée", {
         description: "L'offre de stage a été activé avec succès.",
       })
     },
-    onError: (error: any) => {
-      toast({
-        title: "Erreur",
-        description: error.response?.data?.message || "Impossible d'activer l'offre",
-        variant: "destructive",
+    onError: (error: ApiError) => {
+      toast.error("Erreur", {
+        description: error.response?.data?.message ?? "Impossible d'activer l'offre",
       })
     }
   })
@@ -87,20 +86,17 @@ export const useInternshipOffer = ({ internshipOfferId }: {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [InternshipOffersCacheKeys.InternshipOffers]
-      }),
-        queryClient.invalidateQueries({
-          queryKey: [InternshipOffersCacheKeys.InternshipOffer]
-        })
-      toast({
-        title: "Offre inactive",
+      })
+      queryClient.invalidateQueries({
+        queryKey: [InternshipOffersCacheKeys.InternshipOffer]
+      })
+      toast.success("Offre inactive", {
         description: "L'offre de stage a été desactivée avec succès.",
       })
     },
-    onError: (error: any) => {
-      toast({
-        title: "Erreur",
+    onError: (error: ApiError) => {
+      toast.error("Erreur", {
         description: error.response?.data?.message || "Impossible de désactiver l'offre",
-        variant: "destructive",
       })
     }
   })
@@ -110,20 +106,17 @@ export const useInternshipOffer = ({ internshipOfferId }: {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [InternshipOffersCacheKeys.InternshipOffers]
-      }),
-        queryClient.invalidateQueries({
-          queryKey: [InternshipOffersCacheKeys.InternshipOffer]
-        })
-      toast({
-        title: "Offre complète",
+      })
+      queryClient.invalidateQueries({
+        queryKey: [InternshipOffersCacheKeys.InternshipOffer]
+      })
+      toast.success("Offre complète", {
         description: "L'offre de stage a été complété avec succès.",
       })
     },
-    onError: (error: any) => {
-      toast({
-        title: "Erreur",
+    onError: (error: ApiError) => {
+      toast.error("Erreur", {
         description: error.response?.data?.message || "Impossible de compléter l'offre",
-        variant: "destructive",
       })
     }
   })

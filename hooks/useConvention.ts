@@ -1,6 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { toast } from "@/hooks/use-toast"
+import { toast } from "sonner"
 import conventionService from "@/services/conventionService"
+
+interface ApiError {
+  response?: {
+    status?: number;
+    data?: {
+      message?: string;
+    };
+  };
+  message?: string;
+}
 
 // Hook pour récupérer toutes les conventions
 export const useAllConventions = () => {
@@ -26,7 +36,7 @@ export const useCompanyConventions = (companyId: number) => {
     queryKey: ["conventions", "company", companyId],
     queryFn: () => conventionService.getConventionsByCompany(companyId),
     enabled: !!companyId && companyId > 0,
-    retry: (failureCount, error: any) => {
+    retry: (failureCount, error: ApiError) => {
       // Ne pas réessayer si c'est une erreur d'autorisation
       if (error?.response?.status === 403 || error?.response?.status === 401) {
         return false
@@ -42,7 +52,7 @@ export const useTeacherConventions = (teacherId: number) => {
     queryKey: ["conventions", "teacher", teacherId],
     queryFn: () => conventionService.getConventionsByTeacher(teacherId),
     enabled: !!teacherId && teacherId > 0,
-    retry: (failureCount, error: any) => {
+    retry: (failureCount, error: ApiError) => {
       // Ne pas réessayer si c'est une erreur d'autorisation
       if (error?.response?.status === 403 || error?.response?.status === 401) {
         return false
@@ -82,13 +92,12 @@ export const useCreateConventionFromApplication = () => {
       queryClient.invalidateQueries({ queryKey: ["conventions"] })
       queryClient.invalidateQueries({ queryKey: ["applications"] })
       
-      toast({
-        title: "📋 Convention créée",
+      toast.success("📋 Convention créée", {
         description: `La convention "${data.title}" a été générée avec succès.`,
       })
     },
 
-    onError: (error: any) => {
+    onError: (error: ApiError) => {
       let errorMessage = "Impossible de créer la convention"
       
       if (error.response?.data?.message) {
@@ -97,10 +106,8 @@ export const useCreateConventionFromApplication = () => {
         errorMessage = error.message
       }
 
-      toast({
-        title: "❌ Erreur",
+      toast.error("❌ Erreur", {
         description: errorMessage,
-        variant: "destructive",
       })
     },
   })
@@ -116,13 +123,12 @@ export const useValidateConventionByTeacher = () => {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["conventions"] })
-      toast({
-        title: "✅ Convention validée",
+      toast.success("✅ Convention validée", {
         description: "La convention a été validée par l'enseignant.",
       })
     },
 
-    onError: (error: any) => {
+    onError: (error: ApiError) => {
       let errorMessage = "Impossible de valider la convention"
       
       if (error.response?.status === 403) {
@@ -133,10 +139,8 @@ export const useValidateConventionByTeacher = () => {
         errorMessage = error.message
       }
 
-      toast({
-        title: "❌ Erreur de validation",
+      toast.error("❌ Erreur de validation", {
         description: errorMessage,
-        variant: "destructive",
       })
     },
   })
@@ -152,13 +156,12 @@ export const useRejectConventionByTeacher = () => {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["conventions"] })
-      toast({
-        title: "❌ Convention rejetée",
+      toast.success("❌ Convention rejetée", {
         description: "La convention a été rejetée par l'enseignant.",
       })
     },
 
-    onError: (error: any) => {
+    onError: (error: ApiError) => {
       let errorMessage = "Impossible de rejeter la convention"
       
       if (error.response?.status === 403) {
@@ -169,10 +172,8 @@ export const useRejectConventionByTeacher = () => {
         errorMessage = error.message
       }
 
-      toast({
-        title: "❌ Erreur de rejet",
+      toast.error("❌ Erreur de rejet", {
         description: errorMessage,
-        variant: "destructive",
       })
     },
   })
@@ -188,13 +189,12 @@ export const useApproveConventionByAdmin = () => {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["conventions"] })
-      toast({
-        title: "✅ Convention approuvée",
+      toast.success("✅ Convention approuvée", {
         description: "La convention a été approuvée par l'administrateur.",
       })
     },
 
-    onError: (error: any) => {
+    onError: (error: ApiError) => {
       let errorMessage = "Impossible d'approuver la convention"
       
       if (error.response?.status === 403) {
@@ -205,10 +205,8 @@ export const useApproveConventionByAdmin = () => {
         errorMessage = error.message
       }
 
-      toast({
-        title: "❌ Erreur d'approbation",
+      toast.error("❌ Erreur d'approbation", {
         description: errorMessage,
-        variant: "destructive",
       })
     },
   })
@@ -224,13 +222,12 @@ export const useRejectConventionByAdmin = () => {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["conventions"] })
-      toast({
-        title: "❌ Convention rejetée",
+      toast.success("❌ Convention rejetée", {
         description: "La convention a été rejetée par l'administrateur.",
       })
     },
 
-    onError: (error: any) => {
+    onError: (error: ApiError) => {
       let errorMessage = "Impossible de rejeter la convention"
       
       if (error.response?.status === 403) {
@@ -241,10 +238,8 @@ export const useRejectConventionByAdmin = () => {
         errorMessage = error.message
       }
 
-      toast({
-        title: "❌ Erreur de rejet",
+      toast.error("❌ Erreur de rejet", {
         description: errorMessage,
-        variant: "destructive",
       })
     },
   })
@@ -255,22 +250,19 @@ export const useUpdateConventionByCompany = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ id, companyId, data }: { id: number; companyId: number; data: any }) =>
+    mutationFn: ({ id, companyId, data }: { id: number; companyId: number; data: Record<string, unknown> }) =>
       conventionService.updateConventionByCompany(id, companyId, data),
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["conventions"] })
-      toast({
-        title: "✅ Convention mise à jour",
+      toast.success("✅ Convention mise à jour", {
         description: "La convention a été mise à jour avec succès.",
       })
     },
 
-    onError: (error: any) => {
-      toast({
-        title: "❌ Erreur",
+    onError: (error: ApiError) => {
+      toast.error("❌ Erreur", {
         description: error.message || "Impossible de mettre à jour la convention",
-        variant: "destructive",
       })
     },
   })
@@ -283,8 +275,7 @@ export const useDownloadConventionPdf = () => {
       conventionService.downloadConventionPdf(conventionId),
 
     onMutate: () => {
-      toast({
-        title: "📄 Téléchargement en cours",
+      toast.loading("📄 Téléchargement en cours", {
         description: "Préparation du PDF...",
       })
     },
@@ -301,21 +292,18 @@ export const useDownloadConventionPdf = () => {
         document.body.removeChild(link)
         window.URL.revokeObjectURL(url)
 
-        toast({
-          title: "📄 PDF téléchargé",
+        toast.success("📄 PDF téléchargé", {
           description: "Le PDF de la convention a été téléchargé avec succès.",
         })
       } catch (downloadError) {
         console.error("Erreur lors du téléchargement:", downloadError)
-        toast({
-          title: "❌ Erreur de téléchargement",
+        toast.error("❌ Erreur de téléchargement", {
           description: "Impossible de télécharger le fichier PDF",
-          variant: "destructive",
         })
       }
     },
 
-    onError: (error: any) => {
+    onError: (error: ApiError) => {
       let errorMessage = "Impossible de télécharger le PDF"
       
       if (error.response?.status === 403) {
@@ -328,10 +316,8 @@ export const useDownloadConventionPdf = () => {
         errorMessage = error.message
       }
 
-      toast({
-        title: "❌ Erreur de téléchargement",
+      toast.error("❌ Erreur de téléchargement", {
         description: errorMessage,
-        variant: "destructive",
       })
     },
   })
@@ -347,17 +333,14 @@ export const useUploadSignedPdf = () => {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["conventions"] })
-      toast({
-        title: "📄 PDF signé uploadé",
+      toast.success("📄 PDF signé uploadé", {
         description: "Le PDF signé a été uploadé avec succès.",
       })
     },
 
-    onError: (error: any) => {
-      toast({
-        title: "❌ Erreur d'upload",
+    onError: (error: ApiError) => {
+      toast.error("❌ Erreur d'upload", {
         description: error.message || "Impossible d'uploader le PDF signé",
-        variant: "destructive",
       })
     },
   })
