@@ -3,7 +3,19 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Filter, Search } from "lucide-react"
 
-export function CompanyApplicationsFilters() {
+interface CompanyApplicationsFiltersProps {
+  search: string
+  setSearch: (v: string) => void
+  status: string
+  setStatus: (v: string) => void
+}
+
+export function CompanyApplicationsFilters({
+  search,
+  setSearch,
+  status,
+  setStatus,
+}: CompanyApplicationsFiltersProps) {
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div className="flex flex-1 items-center space-x-2">
@@ -12,9 +24,11 @@ export function CompanyApplicationsFilters() {
           <Input
             placeholder="Rechercher une candidature..."
             className="pl-8"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
           />
         </div>
-        <Select defaultValue="all">
+        <Select value={status} onValueChange={setStatus}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Statut" />
           </SelectTrigger>
