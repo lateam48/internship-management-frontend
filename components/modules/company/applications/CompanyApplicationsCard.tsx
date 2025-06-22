@@ -1,14 +1,14 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ApplicationResponseDTO } from "@/types"
-import { Calendar, CheckCircle, XCircle, FileCheck, Download, Loader2 } from "lucide-react"
+import { Calendar, CheckCircle, XCircle, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useApplication } from "@/hooks/useApplication"
 import { useState } from "react"
+import { SubmitButton } from "@/components/global/submit-button"
 
 interface CompanyApplicationsCardProps {
   application: ApplicationResponseDTO
@@ -113,11 +113,13 @@ export function CompanyApplicationsCard({
 
           {variant === "pending" && (
             <div className="flex space-x-2">
-              <Button
+              <SubmitButton
                 size="sm"
+                loading={isProcessing}
+                label="Accepter"
                 onClick={() => handleUpdateStatus(application.id, "ACCEPTED")}
-                disabled={isProcessing}
                 className="flex-1"
+                btnType="button"
               >
                 {isProcessing ? (
                   <Loader2 className="h-4 w-4 mr-1 animate-spin" />
@@ -125,13 +127,15 @@ export function CompanyApplicationsCard({
                   <CheckCircle className="h-4 w-4 mr-1" />
                 )}
                 Accepter
-              </Button>
-              <Button
+              </SubmitButton>
+              <SubmitButton
                 size="sm"
-                variant="outline"
+                loading={isProcessing}
+                label="Rejeter"
                 onClick={() => handleUpdateStatus(application.id, "REJECTED")}
-                disabled={isProcessing}
                 className="flex-1"
+                btnType="button"
+                variant="outline"
               >
                 {isProcessing ? (
                   <Loader2 className="h-4 w-4 mr-1 animate-spin" />
@@ -139,7 +143,7 @@ export function CompanyApplicationsCard({
                   <XCircle className="h-4 w-4 mr-1" />
                 )}
                 Rejeter
-              </Button>
+              </SubmitButton>
             </div>
           )}
 
@@ -155,42 +159,29 @@ export function CompanyApplicationsCard({
                   </div>
                 </div>
               ) : (
-                <Button
+                <SubmitButton
                   size="sm"
+                  loading={isProcessing}
+                  label="Créer la convention"
                   onClick={() => onOpenConventionModal(application)}
-                  disabled={isProcessing}
                   className="w-full"
-                >
-                  {isProcessing ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Création en cours...
-                    </>
-                  ) : (
-                    <>
-                      <FileCheck className="h-4 w-4 mr-2" />
-                      Créer la convention
-                    </>
-                  )}
-                </Button>
+                  btnType="button"
+                />
               )}
             </>
           )}
 
-          <Button
+          <SubmitButton
             size="sm"
             variant="outline"
             onClick={() => handleDownloadBundle(application.id)}
             disabled={downloadApplicationBundle.isPending && downloadApplicationBundle.variables === application.id}
-            className="flex-1 w-full"
-          >
-            {downloadApplicationBundle.isPending && downloadApplicationBundle.variables === application.id ? (
-              <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-            ) : (
-              <Download className="h-4 w-4 mr-1" />
-            )}
-            Télécharger dossier
-          </Button>
+            loading={downloadApplicationBundle.isPending && downloadApplicationBundle.variables === application.id}
+            loadingText="Téléchargement..."
+            label="Télécharger dossier"
+            btnType="button"
+            className="w-full"
+          />
         </div>
       </CardContent>
     </Card>
