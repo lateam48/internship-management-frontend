@@ -67,7 +67,7 @@ export function StudentApplicationsCard({
             Postulé le {format(new Date(application.applicationDate), "dd MMMM yyyy", { locale: fr })}
           </div>
           <div className="flex space-x-2">
-            <Link href={`/student/offers/${application.offerId}`} className="flex-1">
+            <Link href={`/dashboard/offers/${application.offerId}`} className="flex-1">
               <Button variant="outline" size="sm" className="w-full">
                 <Eye className="h-4 w-4 mr-2" />
                 Voir l&apos;offre

@@ -54,7 +54,7 @@ export function StudentOffersCard({ offer, index }: { offer: GetInternshipOfferR
           </div>
         )}
         <div className="pt-2">
-          <Link href={`/student/offers/${offer.id}`}>
+          <Link href={`/dashboard/offers/${offer.id}`}>
             <Button className="w-full gradient-bg text-white btn-animate">Voir les détails</Button>
           </Link>
         </div>
