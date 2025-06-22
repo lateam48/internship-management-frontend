@@ -39,7 +39,6 @@ export interface UpdateConventionByCompanyDTO {
   endDate: string
 }
 
-export type CreateConventionFromApplicationMutation = UseMutationResult<ConventionResponseDTO, Error, number, unknown>
 export type ValidateConventionByTeacherMutation = UseMutationResult<unknown, Error, number, unknown>
 export type RejectConventionByTeacherMutation = UseMutationResult<unknown, Error, { id: number; reason: string }, unknown>
 export type ApproveConventionByAdminMutation = UseMutationResult<unknown, Error, number, unknown>

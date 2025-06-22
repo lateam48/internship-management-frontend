@@ -19,7 +19,6 @@ export interface UserResponseData{
     role:UserRole
 }
 
-export type ApplicationStatus = "ACCEPTED" | "PENDING" | "REJECTED"
 export type NotificationType =
   | "NEW_OFFER"
   | "NEW_APPLICATION"
@@ -70,24 +69,6 @@ export interface AuthResponse {
   user: User
 }
 
-export interface ApplicationResponseDTO {
-  id: number
-  firstName: string
-  lastName: string
-  offerTitle: string
-  status: ApplicationStatus
-  applicationDate: string
-  offerId: number
-  studentId: number
-}
-
-export interface CreateApplicationDTO {
-  offerId: number
-  studentId: number
-  coverLetter: string
-  cvFile?: File
-}
-
 export interface NotificationRecipient {
   userId: number;
   read: boolean;
@@ -131,3 +112,4 @@ export interface CreateNotificationDTO {
 export * from './sector';
 export * from './offer';
 export * from './convention';
+export * from './application';
