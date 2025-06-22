@@ -46,8 +46,8 @@ export function CompanyApplicationsDialogs({
     defaultValues: {
       title: "",
       description: "",
-      startDate: "",
-      endDate: "",
+      startDate: undefined,
+      endDate: undefined,
       companyName: "",
       companyAddress: "",
       supervisorName: "",
@@ -57,7 +57,7 @@ export function CompanyApplicationsDialogs({
     },
   })
 
-  const handleSubmitFormConvention = (values: CreateConventionFormSchema) => {
+  const handleSubmitFormConvention = () => {
     if (!selectedApplication) return
     setProcessingApplicationId(selectedApplication.id)
     createConventionMutation.mutate(selectedApplication.id, {
@@ -82,7 +82,11 @@ export function CompanyApplicationsDialogs({
   }
 
   const resetForm = () => {
-    form.reset()
+    form.reset({
+      ...form,
+      startDate: undefined,
+      endDate: undefined
+    })
     setUploadedFile(null)
   }
 
@@ -105,8 +109,8 @@ export function CompanyApplicationsDialogs({
       form.reset({
         title: `Convention de stage - ${selectedApplication.firstName} ${selectedApplication.lastName}`,
         description: `Stage pour l'offre: ${selectedApplication.offerTitle}`,
-        startDate: "",
-        endDate: "",
+        startDate: undefined,
+        endDate: undefined,
         companyName: "",
         companyAddress: "",
         supervisorName: "",

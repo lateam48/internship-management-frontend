@@ -29,8 +29,8 @@ export interface UpdateApplicationStatusDTO {
 export interface CreateConventionFormData {
   title: string
   description: string
-  startDate: string
-  endDate: string
+  startDate: Date | undefined
+  endDate: Date | undefined
   companyName: string
   companyAddress: string
   supervisorName: string
@@ -43,8 +43,8 @@ export interface CreateConventionFormData {
 export const createConventionFormSchema = z.object({
   title: z.string().min(1, "Le titre est requis"),
   description: z.string().min(1, "La description est requise"),
-  startDate: z.string().min(1, "La date de début est requise"),
-  endDate: z.string().min(1, "La date de fin est requise"),
+  startDate: z.date({ required_error: "La date de début est requise" }),
+  endDate: z.date({ required_error: "La date de fin est requise" }),
   companyName: z.string().min(1, "Le nom de l'entreprise est requis"),
   companyAddress: z.string().min(1, "L'adresse de l'entreprise est requise"),
   supervisorName: z.string().min(1, "Le nom du superviseur est requis"),
