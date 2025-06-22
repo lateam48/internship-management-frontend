@@ -96,6 +96,12 @@ export const navigationConfig: NavigationItem[] = [
         icon: UserCheck,
         roles: [UserRoles.STUDENT],
     },
+    {
+        title: "Mes candidatures",
+        href: "/dashboard/applications",
+        icon: Users,
+        roles: [UserRoles.STUDENT],
+    },
     // Company specific
     {
         title: "Mes Offres",
