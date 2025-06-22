@@ -1,5 +1,7 @@
 import { UseMutationResult } from "@tanstack/react-query"
 
+export type OfferStatus = "ACTIVE" | "INACTIVE" | "COMPLETED"
+
 export interface GetInternshipOfferResponseDTO {
   id: number
   title: string
@@ -10,7 +12,7 @@ export interface GetInternshipOfferResponseDTO {
   length: number
   companyName: string
   companyId: number
-  status: string
+  status: OfferStatus
   createdAt: string
   updatedAt: string
 }
