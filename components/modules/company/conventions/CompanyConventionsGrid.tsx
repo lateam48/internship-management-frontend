@@ -72,5 +72,3 @@ export function CompanyConventionsGrid({
     </div>
   )
 }
-
-export { CompanyConventionsCard } from "./CompanyConventionsCard" 
