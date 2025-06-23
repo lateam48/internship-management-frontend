@@ -12,7 +12,7 @@ import { toast } from "sonner"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { Info, User, GraduationCap, Shield, Eye, EyeOff, Briefcase } from "lucide-react"
+import { Info, User, GraduationCap, Shield, Eye, EyeOff, Briefcase, ArrowLeft } from "lucide-react"
 import { SubmitButton } from "@/components/global"
 
 const LoginSchema = z.object({
@@ -80,6 +80,10 @@ export function LoginForm() {
         <div className="min-h-screen flex items-center justify-center p-4 bg-muted/30">
             <div className="w-full max-w-md md:max-w-full flex flex-col md:flex-row md:justify-center gap-6">
                 <Card className="shadow-lg  w-full md:max-w-md grid items-center">
+                    <Button variant="ghost" onClick={() => router.back()} className="mx-5" >
+                        <ArrowLeft className="h-4 w-4 mr-2" />
+                        Retour
+                    </Button>
                     <CardHeader className="space-y-1 text-center">
                         <CardTitle className="text-2xl font-bold">Connexion</CardTitle>
                         <CardDescription>Connectez-vous à votre compte StageLink Cameroun</CardDescription>
