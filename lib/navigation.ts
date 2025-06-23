@@ -2,10 +2,7 @@ import { type UserRole, UserRoles } from "@/types"
 import {
   LayoutDashboard,
   Users,
-  BookOpen,
   Settings,
-  Calendar,
-  UserCheck,
   Book,
   Hash,
   LucideListChecks,
@@ -62,24 +59,6 @@ export const navigationConfig: NavigationItem[] = [
         roles: [UserRoles.TEACHER],
     },
     // Student specific
-    {
-        title: "Mes cours",
-        href: "/dashboard/courses",
-        icon: BookOpen,
-        roles: [UserRoles.STUDENT],
-    },
-    {
-        title: "Planning",
-        href: "/dashboard/schedule",
-        icon: Calendar,
-        roles: [UserRoles.STUDENT],
-    },
-    {
-        title: "Notes",
-        href: "/dashboard/grades",
-        icon: UserCheck,
-        roles: [UserRoles.STUDENT],
-    },
     {
         title: "Mes candidatures",
         href: "/dashboard/applications",
