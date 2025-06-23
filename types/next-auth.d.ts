@@ -7,7 +7,6 @@ declare module "next-auth" {
         role?: string
         firstName: string
         lastName: string
-        username: string
         sector?: Sector
         accessToken?: string;
     }

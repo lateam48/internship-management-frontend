@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation";
 
 import { InternshipOffersCacheKeys } from "@/services/const";
 import { queryClient } from "@/providers";
@@ -14,10 +15,10 @@ interface ApiError {
     };
   };
 }
-
 export const useInternshipOffer = ({ internshipOfferId }: {
   internshipOfferId?: GetInternshipOfferResponseDTO['id']
 }) => {
+  const router = useRouter()
   const createOffer = useMutation({
     mutationFn: ({ data }: { data: CreateInternshipOfferRequestDTO }) =>
       internshipOfferService.create(data),
@@ -28,6 +29,7 @@ export const useInternshipOffer = ({ internshipOfferId }: {
       toast.success("Offre créée", {
         description: "L'offre de stage a été publiée avec succès.",
       })
+      router.push("/dashboard/offers")
     },
     onError: (error: ApiError) => {
       toast.error("Erreur", {

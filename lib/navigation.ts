@@ -2,14 +2,7 @@ import { type UserRole, UserRoles } from "@/types"
 import {
   LayoutDashboard,
   Users,
-  BookOpen,
-  GraduationCap,
   Settings,
-  FileText,
-  Calendar,
-  BarChart3,
-  UserCheck,
-  School,
   Book,
   Hash,
   LucideListChecks,
@@ -60,42 +53,12 @@ export const navigationConfig: NavigationItem[] = [
     
     // Teacher specific
     {
-        title: "Cours",
-        href: "/dashboard/courses",
-        icon: School,
-        roles: [UserRoles.TEACHER],
-    },
-    {
-        title: "Étudiants",
-        href: "/dashboard/students",
-        icon: GraduationCap,
-        roles: [UserRoles.TEACHER],
-    },
-    {
-        title: "Évaluations",
-        href: "/dashboard/evaluations",
-        icon: FileText,
+        title: "Validation des conventions",
+        href: "/dashboard/conventions",
+        icon: Book,
         roles: [UserRoles.TEACHER],
     },
     // Student specific
-    {
-        title: "Mes cours",
-        href: "/dashboard/courses",
-        icon: BookOpen,
-        roles: [UserRoles.STUDENT],
-    },
-    {
-        title: "Planning",
-        href: "/dashboard/schedule",
-        icon: Calendar,
-        roles: [UserRoles.STUDENT],
-    },
-    {
-        title: "Notes",
-        href: "/dashboard/grades",
-        icon: UserCheck,
-        roles: [UserRoles.STUDENT],
-    },
     {
         title: "Mes candidatures",
         href: "/dashboard/applications",
@@ -122,15 +85,9 @@ export const navigationConfig: NavigationItem[] = [
         roles: [UserRoles.COMPANY],
     },
     {
-        title: "Stages Actifs",
-        href: "/dashboard/internships",
-        icon: Building,
-        roles: [UserRoles.COMPANY],
-    },
-    {
-        title: "Statistiques",
-        href: "/dashboard/analytics",
-        icon: BarChart3,
+        title: "Conventions",
+        href: "/dashboard/conventions",
+        icon: Book,
         roles: [UserRoles.COMPANY],
     },
     {
