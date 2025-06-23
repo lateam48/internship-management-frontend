@@ -113,3 +113,4 @@ export * from './sector';
 export * from './offer';
 export * from './convention';
 export * from './application';
+export * from './user';

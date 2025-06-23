@@ -7,7 +7,6 @@ import {
   Settings,
   FileText,
   Calendar,
-  BarChart3,
   UserCheck,
   School,
   Book,
@@ -122,15 +121,9 @@ export const navigationConfig: NavigationItem[] = [
         roles: [UserRoles.COMPANY],
     },
     {
-        title: "Stages Actifs",
-        href: "/dashboard/internships",
-        icon: Building,
-        roles: [UserRoles.COMPANY],
-    },
-    {
-        title: "Statistiques",
-        href: "/dashboard/analytics",
-        icon: BarChart3,
+        title: "Conventions",
+        href: "/dashboard/conventions",
+        icon: Book,
         roles: [UserRoles.COMPANY],
     },
     {

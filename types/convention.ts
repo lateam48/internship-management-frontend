@@ -1,4 +1,5 @@
 import { UseMutationResult } from "@tanstack/react-query"
+import { ApiError } from "@/types"
 
 export type ConventionStatus =
   | "PENDING"
@@ -43,5 +44,7 @@ export type ValidateConventionByTeacherMutation = UseMutationResult<unknown, Err
 export type RejectConventionByTeacherMutation = UseMutationResult<unknown, Error, { id: number; reason: string }, unknown>
 export type ApproveConventionByAdminMutation = UseMutationResult<unknown, Error, number, unknown>
 export type RejectConventionByAdminMutation = UseMutationResult<unknown, Error, { id: number; reason: string }, unknown>
-export type UpdateConventionByCompanyMutation = UseMutationResult<ConventionResponseDTO, Error, { id: number; companyId: number; data: Record<string, unknown> }, unknown>
-export type DownloadConventionPdfMutation = UseMutationResult<unknown, Error, number, unknown> 
+export type UpdateConventionByCompanyMutation = UseMutationResult<ConventionResponseDTO, ApiError, { id: number; companyId: number; data: Record<string, unknown> }, unknown>
+
+export type DownloadConventionPdfMutation = UseMutationResult<Blob, ApiError, number, unknown>
+export type UploadSignedPdfMutation = UseMutationResult<ConventionResponseDTO, ApiError, { id: number; file: File }, unknown>
