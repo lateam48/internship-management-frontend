@@ -3,12 +3,9 @@ import {
   LayoutDashboard,
   Users,
   BookOpen,
-  GraduationCap,
   Settings,
-  FileText,
   Calendar,
   UserCheck,
-  School,
   Book,
   Hash,
   LucideListChecks,
@@ -59,21 +56,9 @@ export const navigationConfig: NavigationItem[] = [
     
     // Teacher specific
     {
-        title: "Cours",
-        href: "/dashboard/courses",
-        icon: School,
-        roles: [UserRoles.TEACHER],
-    },
-    {
-        title: "Étudiants",
-        href: "/dashboard/students",
-        icon: GraduationCap,
-        roles: [UserRoles.TEACHER],
-    },
-    {
-        title: "Évaluations",
-        href: "/dashboard/evaluations",
-        icon: FileText,
+        title: "Validation des conventions",
+        href: "/dashboard/conventions",
+        icon: Book,
         roles: [UserRoles.TEACHER],
     },
     // Student specific
