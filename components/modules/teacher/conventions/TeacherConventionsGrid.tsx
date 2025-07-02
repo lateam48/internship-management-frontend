@@ -12,6 +12,9 @@ import { SubmitButton } from "@/components/global/submit-button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ConventionResponseDTO } from "@/types/convention"
 import { ApiError } from "@/types"
+import { useRegenerateConventionPdf, useUploadSignedPdf } from "@/hooks/useConvention"
+import { useState } from "react"
+import { Input } from "@/components/ui/input"
 
 function getStatusColor(status: string) {
   switch (status) {
@@ -43,22 +46,7 @@ function getStatusText(status: string) {
   }
 }
 
-export function TeacherConventionsGrid({
-  conventions,
-  loading,
-  error,
-  onValidate,
-  onReject,
-  onDownloadPdf,
-  rejectReasons,
-  setRejectReasons,
-  rejectingId,
-  setRejectingId,
-  validatingId,
-  downloadingConventions,
-  rejectMutationPending,
-  validateMutationPending,
-}: Readonly<{
+type TeacherConventionsGridProps = Readonly<{
   conventions: ConventionResponseDTO[] | undefined
   loading: boolean
   error: ApiError | null
@@ -73,11 +61,37 @@ export function TeacherConventionsGrid({
   downloadingConventions: Set<number>
   rejectMutationPending: boolean
   validateMutationPending: boolean
-}>) {
-  const pendingConventions = conventions?.filter((conv) => conv.status === "PENDING") || []
-  const validatedConventions = conventions?.filter((conv) => conv.status === "VALIDATED_BY_TEACHER") || []
+}>
 
-  if (loading) {
+export function TeacherConventionsGrid(props: TeacherConventionsGridProps) {
+  const {
+    onValidate,
+    onReject,
+    onDownloadPdf,
+    rejectReasons,
+    setRejectReasons,
+    rejectingId,
+    setRejectingId,
+    validatingId,
+    rejectMutationPending,
+    validateMutationPending,
+  } = props;
+
+  const pendingConventions = props.conventions?.filter((conv) => conv.status === "PENDING") || []
+  const validatedConventions = props.conventions?.filter((conv) => conv.status === "VALIDATED_BY_TEACHER") || []
+
+  const regeneratePdfMutation = useRegenerateConventionPdf()
+  const uploadPdfMutation = useUploadSignedPdf()
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+
+  const handleRegenerateAndDownload = async (id: number) => {
+    await regeneratePdfMutation.mutateAsync(id)
+    setTimeout(() => {
+      onDownloadPdf(id)
+    }, 1000)
+  }
+
+  if (props.loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {[...Array(4)].map((_, i) => (
@@ -98,7 +112,7 @@ export function TeacherConventionsGrid({
     )
   }
 
-  if (error) {
+  if (props.error) {
     return (
       <div className="text-center py-12">
         <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
@@ -110,7 +124,7 @@ export function TeacherConventionsGrid({
               <h3 className="text-sm font-medium text-red-800">Erreur lors du chargement des conventions</h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>Impossible de récupérer les conventions. Veuillez réessayer plus tard.</p>
-                <p className="mt-1 text-xs">Détails: {error?.message || "Erreur inconnue"}</p>
+                <p className="mt-1 text-xs">Détails: {props.error?.message ?? "Erreur inconnue"}</p>
               </div>
             </div>
           </div>
@@ -119,7 +133,7 @@ export function TeacherConventionsGrid({
     )
   }
 
-  if (!conventions || conventions.length === 0) {
+  if (!props.conventions || props.conventions.length === 0) {
     return (
       <div className="text-center py-12">
         <User className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -189,15 +203,15 @@ export function TeacherConventionsGrid({
                         variant="outline"
                         size="sm"
                         className="w-full"
-                        onClick={() => onDownloadPdf(convention.id)}
-                        disabled={downloadingConventions.has(convention.id)}
+                        onClick={() => handleRegenerateAndDownload(convention.id)}
+                        disabled={props.downloadingConventions.has(convention.id) || regeneratePdfMutation.isPending}
                       >
-                        {downloadingConventions.has(convention.id) ? (
+                        {props.downloadingConventions.has(convention.id) || regeneratePdfMutation.isPending ? (
                           <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                         ) : (
                           <Download className="h-4 w-4 mr-2" />
                         )}
-                        Télécharger le PDF
+                        Télécharger PDF
                       </Button>
                       {rejectingId === convention.id ? (
                         <div className="space-y-2">
@@ -325,20 +339,40 @@ export function TeacherConventionsGrid({
                         {format(new Date(convention.endDate), "dd MMM yyyy", { locale: fr })}
                       </div>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full"
-                      onClick={() => onDownloadPdf(convention.id)}
-                      disabled={downloadingConventions.has(convention.id)}
-                    >
-                      {downloadingConventions.has(convention.id) ? (
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      ) : (
-                        <Download className="h-4 w-4 mr-2" />
+                    <div className="space-y-2 pt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={() => handleRegenerateAndDownload(convention.id)}
+                        disabled={props.downloadingConventions.has(convention.id) || regeneratePdfMutation.isPending}
+                      >
+                        {props.downloadingConventions.has(convention.id) || regeneratePdfMutation.isPending ? (
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        ) : (
+                          <Download className="h-4 w-4 mr-2" />
+                        )}
+                        Télécharger PDF
+                      </Button>
+                      {convention.status === "VALIDATED_BY_TEACHER" && (
+                        <div className="flex items-center space-x-2 mt-2">
+                          <Input
+                            type="file"
+                            accept=".pdf"
+                            onChange={e => setSelectedFile(e.target.files?.[0] || null)}
+                            className="flex-1"
+                          />
+                          <SubmitButton
+                            size="sm"
+                            onClick={() => selectedFile && uploadPdfMutation.mutate({ id: convention.id, file: selectedFile })}
+                            disabled={!selectedFile || uploadPdfMutation.isPending}
+                            loading={uploadPdfMutation.isPending}
+                            loadingText="Upload..."
+                            label="Uploader PDF signé"
+                          />
+                        </div>
                       )}
-                      Télécharger le PDF
-                    </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

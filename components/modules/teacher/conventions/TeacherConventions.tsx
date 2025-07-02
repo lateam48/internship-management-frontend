@@ -65,8 +65,8 @@ export function TeacherConventions() {
     }
   }
 
-  const pendingCount = conventions?.filter((c) => c.status === "PENDING").length || 0
-  const validatedCount = conventions?.filter((c) => c.status === "VALIDATED_BY_TEACHER").length || 0
+  const pendingCount = conventions?.filter((c) => c.status === "PENDING").length ?? 0
+  const validatedCount = conventions?.filter((c) => c.status === "VALIDATED_BY_TEACHER").length ?? 0
 
   return (
     <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">

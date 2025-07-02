@@ -12,6 +12,7 @@ import { fr } from "date-fns/locale"
 import { useState } from "react"
 import { SubmitButton } from "@/components/global"
 import type { DownloadConventionPdfMutation, UploadSignedPdfMutation } from "@/types"
+import { useRegenerateConventionPdf } from "@/hooks/useConvention"
 
 
 interface CompanyConventionsCardProps {
@@ -28,6 +29,7 @@ export function CompanyConventionsCard({
   uploadPdfMutation,
 }: Readonly<CompanyConventionsCardProps>) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const regeneratePdfMutation = useRegenerateConventionPdf()
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -66,6 +68,13 @@ export function CompanyConventionsCard({
     if (e.target.files?.[0]) {
       setSelectedFile(e.target.files[0])
     }
+  }
+
+  const handleRegenerateAndDownload = async () => {
+    await regeneratePdfMutation.mutateAsync(convention.id)
+    setTimeout(() => {
+      onDownloadPdf.mutate(convention.id)
+    }, 1000) // attendre 1s pour laisser le backend générer le PDF
   }
 
   return (
@@ -150,13 +159,13 @@ export function CompanyConventionsCard({
                 variant="outline"
                 size="sm"
                 className="flex-1"
-                onClick={() => onDownloadPdf.mutate(convention.id)}
-                disabled={onDownloadPdf.isPending}
-                loading={onDownloadPdf.isPending}
+                onClick={handleRegenerateAndDownload}
+                disabled={onDownloadPdf.isPending || regeneratePdfMutation.isPending}
+                loading={onDownloadPdf.isPending || regeneratePdfMutation.isPending}
                 loadingText="Téléchargement..."
-                label="Télécharger PDF"
+                label="Régénérer & Télécharger PDF"
               >
-                {onDownloadPdf.isPending ? (
+                {onDownloadPdf.isPending || regeneratePdfMutation.isPending ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 ) : (
                   <Download className="h-4 w-4 mr-2" />

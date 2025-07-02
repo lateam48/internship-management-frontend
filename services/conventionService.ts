@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/axios"
-import { ConventionResponseDTO } from "@/types"
+import { ConventionResponseDTO, CreateConventionFormSchema } from "@/types"
 
 const BASE_URL = "/conventions"
 
@@ -34,9 +34,13 @@ const checkConventionExistsForApplication = async (applicationId: number): Promi
   }
 }
 
-const createConventionFromApplication = async (applicationId: number): Promise<ConventionResponseDTO> => {
+const createConventionFromApplication = async (
+  applicationId: number,
+  conventionData: CreateConventionFormSchema
+): Promise<ConventionResponseDTO> => {
   const response = await apiClient.post<ConventionResponseDTO>(
-    `${BASE_URL}/create-from-application/${applicationId}`
+    `${BASE_URL}/create-from-application/${applicationId}`,
+    conventionData
   )
   return response.data
 }
@@ -80,7 +84,7 @@ const rejectConventionByAdmin = async (
 const updateConventionByCompany = async (
   id: number,
   companyId: number,
-  data: any
+  data: Record<string, unknown>
 ): Promise<ConventionResponseDTO> => {
   const response = await apiClient.put<ConventionResponseDTO>(
     `${BASE_URL}/${id}/update-by-company/${companyId}`,
@@ -101,19 +105,25 @@ const downloadConventionPdf = async (id: number): Promise<Blob> => {
       }
     )
     return response.data
-  } catch (error: any) {
-    if (error.response) {
-      const status = error.response.status
+  } catch (error: unknown) {
+    if (typeof error === "object" && error !== null && "response" in error) {
+      const err = error as { response: { status: number; data: unknown } }
+      const status = err.response.status
       let errorMessage = "Erreur inconnue du serveur"
       
       try {
-        if (error.response.data instanceof Blob) {
-          const text = await error.response.data.text()
-          errorMessage = text || `Erreur ${status}`
-        } else if (typeof error.response.data === 'string') {
-          errorMessage = error.response.data
-        } else if (error.response.data?.message) {
-          errorMessage = error.response.data.message
+        if (err.response.data instanceof Blob) {
+          const text = await err.response.data.text()
+          errorMessage = text ?? `Erreur ${status}`
+        } else if (typeof err.response.data === 'string') {
+          errorMessage = err.response.data
+        } else if (
+          typeof err.response.data === 'object' &&
+          err.response.data !== null &&
+          'message' in err.response.data &&
+          typeof (err.response.data as { message?: string }).message === 'string'
+        ) {
+          errorMessage = (err.response.data as { message: string }).message
         }
       } catch {}
 
@@ -155,6 +165,10 @@ const uploadSignedPdf = async (id: number, file: File): Promise<ConventionRespon
   return response.data
 }
 
+const regenerateConventionPdf = async (id: number): Promise<void> => {
+  await apiClient.put(`${BASE_URL}/${id}/regenerate-pdf`)
+}
+
 export default {
   getAllConventions,
   getConventionsByTeacher, // Ajouté
@@ -170,4 +184,5 @@ export default {
   downloadConventionPdf,
   checkPdfAvailability,
   uploadSignedPdf,
+  regenerateConventionPdf,
 }

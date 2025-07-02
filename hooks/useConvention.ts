@@ -2,6 +2,7 @@ import { useQuery, useMutation } from "@tanstack/react-query"
 import { queryClient } from "@/providers"
 import { toast } from "sonner"
 import conventionService from "@/services/conventionService"
+import { CreateConventionFormSchema } from "@/types";
 
 interface ApiError {
   response?: {
@@ -84,8 +85,8 @@ export const useCheckPdfAvailability = (conventionId: number) => {
 // Hook pour créer une convention à partir d'une application
 export const useCreateConventionFromApplication = () => {
   return useMutation({
-    mutationFn: (applicationId: number) =>
-      conventionService.createConventionFromApplication(applicationId),
+    mutationFn: ({ applicationId, conventionData }: { applicationId: number; conventionData: CreateConventionFormSchema }) =>
+      conventionService.createConventionFromApplication(applicationId, conventionData),
 
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["conventions"] })
@@ -271,7 +272,17 @@ export const useDownloadConventionPdf = () => {
     mutationFn: (conventionId: number) =>
       conventionService.downloadConventionPdf(conventionId),
 
-    onSuccess: () => {
+    onSuccess: (blob, conventionId) => {
+      // Création du lien de téléchargement
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', `convention_${conventionId}.pdf`)
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+
       toast.success("📄 PDF téléchargé", {
         description: "Le PDF de la convention a été téléchargé avec succès.",
       })
@@ -279,7 +290,6 @@ export const useDownloadConventionPdf = () => {
 
     onError: (error: ApiError) => {
       let errorMessage = "Impossible de télécharger le PDF"
-      
       if (error.response?.status === 404) {
         errorMessage = "Le PDF de cette convention n'est pas encore disponible."
       } else if (error.response?.data?.message) {
@@ -287,7 +297,6 @@ export const useDownloadConventionPdf = () => {
       } else if (error.message) {
         errorMessage = error.message
       }
-
       toast.error("❌ Erreur de téléchargement", {
         description: errorMessage,
       })
@@ -321,5 +330,18 @@ export const useUploadSignedPdf = () => {
         description: errorMessage,
       })
     },
+  })
+}
+
+// Hook pour régénérer le PDF d'une convention
+export const useRegenerateConventionPdf = () => {
+  return useMutation({
+    mutationFn: (id: number) => conventionService.regenerateConventionPdf(id),
+    onSuccess: () => {
+      toast.success("PDF régénéré", { description: "Le PDF a été régénéré avec succès." })
+    },
+    onError: (error: ApiError) => {
+      toast.error("Erreur lors de la régénération du PDF", { description: error.message })
+    }
   })
 }
