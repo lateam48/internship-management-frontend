@@ -109,6 +109,16 @@ export interface CreateNotificationDTO {
   userIds?: number[]
 }
 
+export interface ApiError {
+  response?: {
+    status?: number;
+    data?: {
+      message?: string;
+    };
+  };
+  message?: string;
+}
+
 export * from './sector';
 export * from './offer';
 export * from './convention';

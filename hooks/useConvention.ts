@@ -3,16 +3,7 @@ import { queryClient } from "@/providers"
 import { toast } from "sonner"
 import conventionService from "@/services/conventionService"
 import { CreateConventionFormSchema } from "@/types";
-
-interface ApiError {
-  response?: {
-    status?: number;
-    data?: {
-      message?: string;
-    };
-  };
-  message?: string;
-}
+import type { ApiError } from "@/types";
 
 // Hook pour récupérer toutes les conventions
 export const useAllConventions = () => {
