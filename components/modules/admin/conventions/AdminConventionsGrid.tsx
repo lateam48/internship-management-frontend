@@ -10,8 +10,9 @@ import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { ConventionResponseDTO } from "@/types"
+import { useRegenerateConventionPdf, useUploadSignedPdf } from "@/hooks/useConvention"
 
-interface AdminConventionsGridProps {
+type AdminConventionsGridProps = Readonly<{
   conventions: ConventionResponseDTO[] | undefined
   isLoading: boolean
   onApprove: (conventionId: number) => void
@@ -20,7 +21,7 @@ interface AdminConventionsGridProps {
   isApproving: (conventionId: number) => boolean
   isRejecting: (conventionId: number) => boolean
   isDownloading: boolean
-}
+}>
 
 export function AdminConventionsGrid({
   conventions,
@@ -34,6 +35,9 @@ export function AdminConventionsGrid({
 }: AdminConventionsGridProps) {
   const [rejectReason, setRejectReason] = useState("")
   const [rejectingId, setRejectingId] = useState<number | null>(null)
+  const regeneratePdfMutation = useRegenerateConventionPdf()
+  const uploadPdfMutation = useUploadSignedPdf()
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -74,6 +78,13 @@ export function AdminConventionsGrid({
       setRejectingId(null)
       setRejectReason("")
     }
+  }
+
+  const handleRegenerateAndDownload = async (id: number) => {
+    await regeneratePdfMutation.mutateAsync(id)
+    setTimeout(() => {
+      onDownloadPdf(id)
+    }, 1000)
   }
 
   if (isLoading) {
@@ -158,15 +169,15 @@ export function AdminConventionsGrid({
                   variant="outline" 
                   size="sm" 
                   className="w-full"
-                  onClick={() => onDownloadPdf(convention.id)}
-                  disabled={isDownloading}
+                  onClick={() => handleRegenerateAndDownload(convention.id)}
+                  disabled={isDownloading || regeneratePdfMutation.isPending}
                 >
-                  {isDownloading ? (
+                  {isDownloading || regeneratePdfMutation.isPending ? (
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   ) : (
                     <Download className="h-4 w-4 mr-2" />
                   )}
-                  Télécharger le PDF
+                  Télécharger PDF
                 </Button>
 
                 {convention.status === "VALIDATED_BY_TEACHER" && (
@@ -244,6 +255,26 @@ export function AdminConventionsGrid({
                       </div>
                     )}
                   </>
+                )}
+
+                {convention.status === "APPROVED_BY_ADMIN" && (
+                  <div className="flex items-center space-x-2 mt-2">
+                    <input
+                      type="file"
+                      accept=".pdf"
+                      onChange={e => setSelectedFile(e.target.files?.[0] || null)}
+                      className="flex-1 border rounded px-2 py-1"
+                    />
+                    <Button
+                      size="sm"
+                      onClick={() => selectedFile && uploadPdfMutation.mutate({ id: convention.id, file: selectedFile })}
+                      disabled={!selectedFile || uploadPdfMutation.isPending}
+                      className="flex-1"
+                    >
+                      {uploadPdfMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+                      Uploader PDF signé
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>

@@ -58,18 +58,48 @@ export function CompanyApplicationsDialogs({
     },
   })
 
-  const handleSubmitFormConvention = () => {
+  const handleSubmitFormConvention = (data: CreateConventionFormSchema) => {
     if (!selectedApplication) return
     setProcessingApplicationId(selectedApplication.id)
-    createConventionMutation.mutate(selectedApplication.id, {
-      onSuccess: () => {
-        onCloseConventionModal()
-        resetForm()
+
+    // Construction du payload complet pour l'API backend
+    const conventionPayload = {
+      id: 0,
+      title: data.title,
+      description: data.description,
+      location: "", // à adapter si tu as ce champ
+      skills: [],    // à adapter si tu as ce champ
+      length: 0,     // à adapter si tu as ce champ
+      companyId: selectedApplication.offerId || 0, // ou autre source si besoin
+      studentId: selectedApplication.studentId || 0,
+      teacherId: 0, // à adapter si tu as l'info
+      startDate: data.startDate ? data.startDate.toISOString().slice(0, 10) : "",
+      endDate: data.endDate ? data.endDate.toISOString().slice(0, 10) : "",
+      companyName: data.companyName,
+      companyAddress: data.companyAddress,
+      supervisorName: data.supervisorName,
+      supervisorEmail: data.supervisorEmail,
+      objectives: data.objectives,
+      weeklyHours: Number(data.weeklyHours),
+      offerId: selectedApplication.offerId || 0,
+      applicationId: selectedApplication.id,
+    }
+
+    createConventionMutation.mutate(
+      {
+        applicationId: selectedApplication.id,
+        conventionData: conventionPayload as unknown as CreateConventionFormSchema
       },
-      onSettled: () => {
-        setProcessingApplicationId(null)
-      },
-    })
+      {
+        onSuccess: () => {
+          onCloseConventionModal()
+          resetForm()
+        },
+        onSettled: () => {
+          setProcessingApplicationId(null)
+        },
+      }
+    )
   }
 
   const handleSubmitFileConvention = () => {
@@ -129,14 +159,14 @@ export function CompanyApplicationsDialogs({
           <DialogTitle className="text-lg">Convention de Stage</DialogTitle>
           <DialogDescription>
             {selectedApplication && (
-              <div className="space-y-1">
-                <p className="text-xs">
+              <>
+                <span className="text-xs block">
                   {selectedApplication.firstName} {selectedApplication.lastName} - {selectedApplication.offerTitle}
-                </p>
-                <div className="text-xs text-muted-foreground">
+                </span>
+                <span className="text-xs text-muted-foreground block">
                   ID: {selectedApplication.id} | Offre: {selectedApplication.offerId} | Étudiant: {selectedApplication.studentId}
-                </div>
-              </div>
+                </span>
+              </>
             )}
           </DialogDescription>
         </DialogHeader>
@@ -156,7 +186,7 @@ export function CompanyApplicationsDialogs({
                       <FormItem>
                         <FormLabel>Titre de la convention</FormLabel>
                         <FormControl>
-                          <Input placeholder="Convention de stage..." {...field} className="text-xs h-7" />
+                          <Input placeholder="Convention de stage..." {...field} value={field.value ?? ""} className="text-xs h-7" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -169,7 +199,7 @@ export function CompanyApplicationsDialogs({
                       <FormItem>
                         <FormLabel>Nom de l&apos;entreprise</FormLabel>
                         <FormControl>
-                          <Input placeholder="Nom de votre entreprise" {...field} className="text-xs h-7" />
+                          <Input placeholder="Nom de votre entreprise" {...field} value={field.value ?? ""} className="text-xs h-7" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -250,7 +280,7 @@ export function CompanyApplicationsDialogs({
                       <FormItem>
                         <FormLabel>Nom du superviseur</FormLabel>
                         <FormControl>
-                          <Input placeholder="Nom du superviseur" {...field} className="text-xs h-7" />
+                          <Input placeholder="Nom du superviseur" {...field} value={field.value ?? ""} className="text-xs h-7" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -263,7 +293,7 @@ export function CompanyApplicationsDialogs({
                       <FormItem>
                         <FormLabel>Email du superviseur</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="email@entreprise.com" {...field} className="text-xs h-7" />
+                          <Input type="email" placeholder="email@entreprise.com" {...field} value={field.value ?? ""} className="text-xs h-7" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -276,7 +306,7 @@ export function CompanyApplicationsDialogs({
                       <FormItem>
                         <FormLabel>Heures/semaine</FormLabel>
                         <FormControl>
-                          <Input type="number" placeholder="35" {...field} className="text-xs h-7" />
+                          <Input type="number" placeholder="35" {...field} value={field.value ?? ""} className="text-xs h-7" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -289,7 +319,7 @@ export function CompanyApplicationsDialogs({
                       <FormItem>
                         <FormLabel>Adresse de l&apos;entreprise</FormLabel>
                         <FormControl>
-                          <Textarea placeholder="Adresse complète de l&apos;entreprise" rows={2} className="text-sm" {...field} />
+                          <Textarea placeholder="Adresse complète de l&apos;entreprise" rows={2} className="text-sm" {...field} value={field.value ?? ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -302,7 +332,7 @@ export function CompanyApplicationsDialogs({
                       <FormItem>
                         <FormLabel>Description du stage</FormLabel>
                         <FormControl>
-                          <Textarea placeholder="Description détaillée du stage" rows={2} className="text-sm" {...field} />
+                          <Textarea placeholder="Description détaillée du stage" rows={2} className="text-sm" {...field} value={field.value ?? ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -315,7 +345,7 @@ export function CompanyApplicationsDialogs({
                       <FormItem>
                         <FormLabel>Objectifs du stage</FormLabel>
                         <FormControl>
-                          <Textarea placeholder="Objectifs pédagogiques et professionnels" rows={2} className="text-sm" {...field} />
+                          <Textarea placeholder="Objectifs pédagogiques et professionnels" rows={2} className="text-sm" {...field} value={field.value ?? ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
