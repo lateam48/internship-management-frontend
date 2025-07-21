@@ -8,6 +8,7 @@ import {
   Briefcase,
   Building,
   UserRoundPen,
+  MessageCircle,
 } from "lucide-react"
 
 export interface NavigationItem {
@@ -71,6 +72,12 @@ export const navigationConfig: NavigationItem[] = [
         icon: Briefcase,
         roles: [UserRoles.STUDENT],
     },
+    {
+        title: "Messagerie",
+        href: "/dashboard/chat",
+        icon: MessageCircle,
+        roles: [UserRoles.COMPANY],
+      },
     // Company specific
     {
         title: "Mes Offres",
@@ -96,6 +103,12 @@ export const navigationConfig: NavigationItem[] = [
         icon: Building,
         roles: [UserRoles.COMPANY],
     },
+    {
+        title: "Messagerie",
+        href: "/dashboard/chat",
+        icon: MessageCircle,
+        roles: [UserRoles.COMPANY],
+      },
     // Common
     // {
     //     title: "Paramètres",
