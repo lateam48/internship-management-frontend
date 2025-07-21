@@ -2,12 +2,12 @@ import { type UserRole, UserRoles } from "@/types"
 import {
   LayoutDashboard,
   Users,
-  Settings,
   Book,
   Hash,
   LucideListChecks,
   Briefcase,
   Building,
+  UserRoundPen,
 } from "lucide-react"
 
 export interface NavigationItem {
@@ -97,10 +97,16 @@ export const navigationConfig: NavigationItem[] = [
         roles: [UserRoles.COMPANY],
     },
     // Common
+    // {
+    //     title: "Paramètres",
+    //     href: "/dashboard/settings",
+    //     icon: Settings,
+    //     roles: [UserRoles.ADMIN, UserRoles.TEACHER, UserRoles.STUDENT, UserRoles.COMPANY],
+    // },
     {
-        title: "Paramètres",
-        href: "/dashboard/settings",
-        icon: Settings,
+        title: "Profil",
+        href: "/dashboard/profile",
+        icon: UserRoundPen,
         roles: [UserRoles.ADMIN, UserRoles.TEACHER, UserRoles.STUDENT, UserRoles.COMPANY],
     },
 ]

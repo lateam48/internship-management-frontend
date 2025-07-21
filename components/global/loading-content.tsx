@@ -12,9 +12,9 @@ export const LoadingContent = ({className, loadingText, icon: Icon = Briefcase}:
         <div className={cn("min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50", className)}>
             <div className="text-center">
                 <div className="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-                    <Icon className="h-8 w-8 text-white" />
+                    <Icon className="h-8 w-8" />
                 </div>
-                <p className="text-gray-600">{ loadingText ?? "Redirection en cours..."}</p>
+                <p className="">{ loadingText ?? "Redirection en cours..."}</p>
             </div>
         </div>
     )

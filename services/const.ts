@@ -1,7 +1,6 @@
 export const InternshipOffersCacheKeys = Object.freeze({
   InternshipOffers: 'internshipOffers',
   InternshipOffer: 'internshipOffer',
-
 })
 
 export const SectorsCacheKeys = Object.freeze({
@@ -11,3 +10,15 @@ export const SectorsCacheKeys = Object.freeze({
 export const UsersCacheKeys = Object.freeze({
   Users: 'users'
 })
+
+export const StaffCacheKeys = Object.freeze({
+  Staff: 'staff',
+  Me: 'me',
+})
+
+export const NotificationCacheKeys = Object.freeze({
+  AllNotifications: 'allNotifications',
+  UserNotifications: 'userNotifications',
+  NotificationById: 'notificationById',
+  NotificationByStatus: 'notificationByStatus',
+});
