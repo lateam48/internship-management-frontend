@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "@/providers";
-import { NotificationCacheKeys } from "./const";
+import { NotificationCacheKeys } from "@/services/const";
 import { notificationService } from "@/services/notificationService";
 import { CreateNotificationDTO, NotificationDTO } from "@/types";
 import { useCallback } from "react";
@@ -246,7 +246,7 @@ export const useNotifications = (params?: {
         queryKey: [NotificationCacheKeys.UserNotifications, userId],
       });
     }
-  }, [queryClient, userId]);
+  }, [userId]);
 
   return {
     // Queries
