@@ -76,7 +76,7 @@ export const navigationConfig: NavigationItem[] = [
         title: "Messagerie",
         href: "/dashboard/chat",
         icon: MessageCircle,
-        roles: [UserRoles.COMPANY],
+        roles: [UserRoles.STUDENT],
       },
     // Company specific
     {
