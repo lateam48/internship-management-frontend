@@ -8,7 +8,8 @@ export const SectorsCacheKeys = Object.freeze({
 })
 
 export const UsersCacheKeys = Object.freeze({
-  Users: 'users'
+  Users: 'users',
+  Staff: 'staff'
 })
 
 export const StaffCacheKeys = Object.freeze({
