@@ -27,7 +27,7 @@ export type NotificationType =
   | "CONVENTION_VALIDATION_REMINDER"
   | "APPLICATION_DECISION_REMINDER"
 export type NotificationChannel = "IN_APP" | "EMAIL"
-export type NotificationStatus = "UNREAD" | "READ" | "ARCHIVED"
+export type NotificationStatus = "UNREAD" | "ARCHIVED"
 export type OfferStatus = "ACTIVE" | "INACTIVE" | "COMPLETED" | "ALL"
 
 export interface User {

@@ -245,8 +245,12 @@ export const useNotifications = (params?: {
       queryClient.invalidateQueries({
         queryKey: [NotificationCacheKeys.UserNotifications, userId],
       });
+      queryClient.invalidateQueries({
+        queryKey: [NotificationCacheKeys.NotificationByStatus, userId],
+        exact: false,
+      });
     }
-  }, [userId]);
+  }, [queryClient, userId]);
 
   return {
     // Queries
