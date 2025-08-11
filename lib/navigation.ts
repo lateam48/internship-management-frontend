@@ -97,12 +97,7 @@ export const navigationConfig: NavigationItem[] = [
         icon: Book,
         roles: [UserRoles.COMPANY],
     },
-    {
-        title: "Profil Entreprise",
-        href: "/dashboard/profile",
-        icon: Building,
-        roles: [UserRoles.COMPANY],
-    },
+
     {
         title: "Messagerie",
         href: "/dashboard/chat",
