@@ -52,6 +52,9 @@ export const useInternshipOffer = ({ internshipOfferId }: {
       queryClient.invalidateQueries({
         queryKey: [InternshipOffersCacheKeys.InternshipOffers]
       })
+      queryClient.invalidateQueries({
+        queryKey: [InternshipOffersCacheKeys.InternshipOffer]
+      })
       toast.success("Offre mise à jour", {
         description: "L'offre de stage a été mise à jour avec succès.",
       })

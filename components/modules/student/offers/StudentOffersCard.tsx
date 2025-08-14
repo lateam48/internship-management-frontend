@@ -10,7 +10,7 @@ import type { GetInternshipOfferResponseDTO } from "@/types/offer"
 export function StudentOffersCard({ offer, index }: { offer: GetInternshipOfferResponseDTO, index: number }) {
   return (
     <Card
-      className="card-hover border-0 shadow-lg bg-card animate-fade-in"
+      className="card-hover border-0 shadow-lg bg-card animate-fade-in h-full flex flex-col"
       style={{ animationDelay: `${index * 0.1}s` }}
     >
       <CardHeader className="pb-4">
@@ -27,7 +27,7 @@ export function StudentOffersCard({ offer, index }: { offer: GetInternshipOfferR
           {offer.companyName}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 flex-1 flex flex-col">
         <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">{offer.description}</p>
         <div className="space-y-2">
           <div className="flex items-center text-sm text-muted-foreground">
@@ -53,7 +53,7 @@ export function StudentOffersCard({ offer, index }: { offer: GetInternshipOfferR
             )}
           </div>
         )}
-        <div className="pt-2">
+        <div className="pt-2 mt-auto">
           <Link href={`/dashboard/offers/${offer.id}`}>
             <Button className="w-full gradient-bg text-white btn-animate">Voir les détails</Button>
           </Link>

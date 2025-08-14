@@ -1,12 +1,17 @@
 "use client"
 
+import { useState, useMemo } from "react"
 import { useUserStore, UserStore } from "@/stores/userStore"
 import { useInternshipOffer } from "@/hooks/useInternshipOffer"
 import { useInternshipOffers } from "@/hooks/useInternshipOffers"
 import { CompanyOffersHeader } from "./CompanyOffersHeader"
 import { CompanyOffersGrid } from "./CompanyOffersGrid"
+import { GetInternshipOfferResponseDTO } from "@/types"
 
 export function CompanyOffers() {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
+  
   const user = useUserStore((state: UserStore) => state.user)
   const userId = user?.id
   const { getInternshipOffers } = useInternshipOffers({ companyId: userId })
@@ -17,6 +22,20 @@ export function CompanyOffers() {
     inactivateInternshipOffer,
     completeInternshipOffer
   } = useInternshipOffer({})
+
+  const filteredOffers = useMemo(() => {
+    if (!offers) return []
+    
+    return offers.filter((offer: GetInternshipOfferResponseDTO) => {
+      const matchesSearch = searchTerm === "" || 
+        offer.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        offer.location.toLowerCase().includes(searchTerm.toLowerCase())
+      
+      const matchesStatus = statusFilter === "all" || offer.status === statusFilter
+      
+      return matchesSearch && matchesStatus
+    })
+  }, [offers, searchTerm, statusFilter])
 
   const handleStatusChange = (offerId: number, action: string) => {
     switch (action) {
@@ -36,9 +55,14 @@ export function CompanyOffers() {
 
   return (
     <div className="space-y-6">
-      <CompanyOffersHeader />
+      <CompanyOffersHeader
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
+      />
       <CompanyOffersGrid
-        offers={offers}
+        offers={filteredOffers}
         isLoading={isLoading}
         onStatusChange={handleStatusChange}
         activateMutation={activateInternshipOffer}

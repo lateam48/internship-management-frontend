@@ -1,90 +1,104 @@
-"use client"
+"use client";
 
-import { Bell, Search } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { SidebarTrigger } from "@/components/ui/sidebar"
-import { Badge } from "@/components/ui/badge"
-import { UserNav } from "@/components/layout"
-import { NotificationsModal } from "@/components/layout/notifications-modal"
-import type { AuthSession } from "@/types/next-auth"
-import {ModeToggle, Logo} from "@/components/global";
-import { useNotifications } from "@/hooks/useNotifications"
-import { useWebSocket } from "@/contexts/WebSocketContext"
-import { useState, useEffect } from "react"
+import { Bell, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Badge } from "@/components/ui/badge";
+import { UserNav } from "@/components/layout";
+import { NotificationsModal } from "@/components/layout/notifications-modal";
+import type { AuthSession } from "@/types/next-auth";
+import { ModeToggle, Logo } from "@/components/global";
+import { useNotifications } from "@/hooks/useNotifications";
+import { useWebSocket } from "@/contexts/WebSocketContext";
+import { useState, useEffect } from "react";
 
 interface NavbarProps {
-    session: AuthSession
+  session: AuthSession;
 }
 
 export function Navbar({ session }: Readonly<NavbarProps>) {
-    const [notificationsOpen, setNotificationsOpen] = useState(false);
-    const userId = session?.user?.id;
-    
-    const { notificationByStatus, refetchNotifications } = useNotifications({ 
-        userId, 
-        status: "UNREAD" 
-    });
-    
-    const { connectWebSocket, registerRefreshCallback, unregisterRefreshCallback } = useWebSocket();
-    
-    useEffect(() => {
-        if (userId) {
-            connectWebSocket(userId.toString());
-            registerRefreshCallback(() => {
-                refetchNotifications();
-            });
-        }
-        return () => {
-            unregisterRefreshCallback();
-        };
-    }, [userId, connectWebSocket, registerRefreshCallback, unregisterRefreshCallback, refetchNotifications]);
-    
-    const unreadCount = notificationByStatus.data?.length || 0;
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const userId = session?.user?.id;
 
-    return (
-        <>
-            <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-                <SidebarTrigger className="-ml-1" />
-                <div className="flex flex-1 items-center justify-between gap-2 px-4">
-                    <Logo />
-                    <div className="flex-1 max-w-md">
-                        <div className="relative">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input type="search" placeholder="Rechercher..." className="pl-8" />
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="relative"
-                            onClick={() => setNotificationsOpen(true)}
-                        >
-                            <Bell className="h-4 w-4" />
-                            {unreadCount > 0 && (
-                                <Badge 
-                                    variant="destructive" 
-                                    className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                                >
-                                    {unreadCount > 99 ? '99+' : unreadCount}
-                                </Badge>
-                            )}
-                            <span className="sr-only">Notifications</span>
-                        </Button>
-                        <ModeToggle />
-                        <UserNav session={session} />
-                    </div>
-                </div>
-            </header>
-            
-            {userId && (
-                <NotificationsModal 
-                    open={notificationsOpen}
-                    onOpenChange={setNotificationsOpen}
-                    userId={userId}
-                />
-            )}
-        </>
-    )
+  const { notificationByStatus, refetchNotifications } = useNotifications({
+    userId: parseInt(userId as string),
+    status: "UNREAD",
+  });
+
+  const {
+    connectWebSocket,
+    registerRefreshCallback,
+    unregisterRefreshCallback,
+  } = useWebSocket();
+
+  useEffect(() => {
+    if (userId) {
+      connectWebSocket(userId.toString());
+      registerRefreshCallback(() => {
+        refetchNotifications();
+      });
+    }
+    return () => {
+      unregisterRefreshCallback();
+    };
+  }, [
+    userId,
+    connectWebSocket,
+    registerRefreshCallback,
+    unregisterRefreshCallback,
+    refetchNotifications,
+  ]);
+
+  const unreadCount = notificationByStatus.data?.length || 0;
+
+  return (
+    <>
+      <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <SidebarTrigger className="-ml-1" />
+        <div className="flex flex-1 items-center justify-between gap-2 px-4">
+          <Logo />
+          <div className="flex-1 max-w-md">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Rechercher..."
+                className="pl-8"
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative"
+              onClick={() => setNotificationsOpen(true)}
+            >
+              <Bell className="h-4 w-4" />
+              {unreadCount > 0 && (
+                <Badge
+                  variant="destructive"
+                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                >
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </Badge>
+              )}
+              <span className="sr-only">Notifications</span>
+            </Button>
+            <ModeToggle />
+            <UserNav session={session} />
+          </div>
+        </div>
+      </header>
+
+      {userId && (
+        <NotificationsModal
+          open={notificationsOpen}
+          onOpenChange={setNotificationsOpen}
+          userId={parseInt(userId)}
+        />
+      )}
+    </>
+  );
 }

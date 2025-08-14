@@ -17,7 +17,6 @@ export default async function DashboardLayout({children, admin, teacher, student
         authzRedirect: "/unauthorized",
     })
 
-    // Render role-specific content using slots
     const renderRoleContent = () => {
         switch (session?.user?.role) {
             case UserRoles.ADMIN:

@@ -39,28 +39,24 @@ export function ChatArea({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom when new messages arrive, but only if user is already at bottom
   useEffect(() => {
     const container = messagesContainerRef.current;
     if (container && messages.length > 0) {
       const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 50;
       const isUserScrolling = container.scrollTop < container.scrollHeight - container.clientHeight - 50;
       
-      // Only auto-scroll if user is at the bottom or very close to it
       if (isAtBottom && !isUserScrolling) {
         setTimeout(() => {
           messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
         }, 100);
       }
     }
-  }, [messages.length]); // Only trigger on message count change, not content change
+  }, [messages.length]);
 
   const isOwnMessage = (message: ChatMessage) => message.senderId === currentUserId;
 
-  // Extract the count value from unreadCount
   const count = typeof unreadCount === 'object' ? unreadCount.total : unreadCount || 0;
 
-  // Refactor nested ternary for messages area
   let messagesContent;
   const sortedMessages = messages.toSorted((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
   if (!selectedParticipant) {
@@ -132,12 +128,10 @@ export function ChatArea({
       </CardHeader>
 
       <CardContent className="flex-1 flex flex-col p-0">
-        {/* Messages area */}
         <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-6 space-y-3">
           {messagesContent}
         </div>
 
-        {/* Message input */}
         {selectedParticipant && (
           <MessageInput
             onSendMessage={onSendMessage}

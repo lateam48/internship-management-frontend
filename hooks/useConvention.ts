@@ -4,33 +4,30 @@ import { toast } from "sonner"
 import conventionService from "@/services/conventionService"
 import { CreateConventionFormSchema } from "@/types";
 import type { ApiError } from "@/types";
+import { ConventionCacheKeys, ApplicationCacheKeys } from "@/services/const";
 
-// Hook pour récupérer toutes les conventions
 export const useAllConventions = () => {
   return useQuery({
-    queryKey: ["conventions"],
+    queryKey: [ConventionCacheKeys.Conventions],
     queryFn: () => conventionService.getAllConventions(),
     enabled: true,
   })
 }
 
-// Hook pour les détails d'une convention
 export const useConventionDetails = (id: number) => {
   return useQuery({
-    queryKey: ["convention", id],
+    queryKey: [ConventionCacheKeys.Convention, id],
     queryFn: () => conventionService.getConventionById(id),
     enabled: !!id,
   })
 }
 
-// Hook pour les conventions d'une entreprise
 export const useCompanyConventions = (companyId: number) => {
   return useQuery({
-    queryKey: ["conventions", "company", companyId],
+    queryKey: [ConventionCacheKeys.Conventions, ConventionCacheKeys.Company, companyId],
     queryFn: () => conventionService.getConventionsByCompany(companyId),
     enabled: !!companyId && companyId > 0,
     retry: (failureCount, error: ApiError) => {
-      // Ne pas réessayer si c'est une erreur d'autorisation
       if (error?.response?.status === 403 || error?.response?.status === 401) {
         return false
       }
@@ -39,14 +36,12 @@ export const useCompanyConventions = (companyId: number) => {
   })
 }
 
-// Hook pour les conventions d'un enseignant
 export const useTeacherConventions = (teacherId: number) => {
   return useQuery({
-    queryKey: ["conventions", "teacher", teacherId],
+    queryKey: [ConventionCacheKeys.Conventions, ConventionCacheKeys.Teacher, teacherId],
     queryFn: () => conventionService.getConventionsByTeacher(teacherId),
     enabled: !!teacherId && teacherId > 0,
     retry: (failureCount, error: ApiError) => {
-      // Ne pas réessayer si c'est une erreur d'autorisation
       if (error?.response?.status === 403 || error?.response?.status === 401) {
         return false
       }
@@ -55,33 +50,30 @@ export const useTeacherConventions = (teacherId: number) => {
   })
 }
 
-// Hook pour vérifier l'existence d'une convention
 export const useCheckConventionExists = (applicationId: number) => {
   return useQuery({
-    queryKey: ["convention-exists", applicationId],
+    queryKey: [ConventionCacheKeys.ConventionExists, applicationId],
     queryFn: () => conventionService.checkConventionExistsForApplication(applicationId),
     enabled: !!applicationId,
   })
 }
 
-// Hook pour vérifier la disponibilité du PDF
 export const useCheckPdfAvailability = (conventionId: number) => {
   return useQuery({
-    queryKey: ["convention-pdf", conventionId],
+    queryKey: [ConventionCacheKeys.ConventionPdf, conventionId],
     queryFn: () => conventionService.checkPdfAvailability(conventionId),
     enabled: !!conventionId,
   })
 }
 
-// Hook pour créer une convention à partir d'une application
 export const useCreateConventionFromApplication = () => {
   return useMutation({
     mutationFn: ({ applicationId, conventionData }: { applicationId: number; conventionData: CreateConventionFormSchema }) =>
       conventionService.createConventionFromApplication(applicationId, conventionData),
 
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["conventions"] })
-      queryClient.invalidateQueries({ queryKey: ["applications"] })
+      queryClient.invalidateQueries({ queryKey: [ConventionCacheKeys.Conventions] })
+      queryClient.invalidateQueries({ queryKey: [ApplicationCacheKeys.Applications] })
       
       toast.success("📋 Convention créée", {
         description: `La convention "${data.title}" a été générée avec succès.`,
@@ -104,14 +96,13 @@ export const useCreateConventionFromApplication = () => {
   })
 }
 
-// Hook pour valider une convention par l'enseignant
 export const useValidateConventionByTeacher = () => {
   return useMutation({
     mutationFn: (conventionId: number) =>
       conventionService.validateConventionByTeacher(conventionId),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["conventions"] })
+      queryClient.invalidateQueries({ queryKey: [ConventionCacheKeys.Conventions] })
       toast.success("✅ Convention validée", {
         description: "La convention a été validée par l'enseignant.",
       })
@@ -135,14 +126,13 @@ export const useValidateConventionByTeacher = () => {
   })
 }
 
-// Hook pour rejeter une convention par l'enseignant
 export const useRejectConventionByTeacher = () => {
   return useMutation({
     mutationFn: ({ id, reason }: { id: number; reason: string }) =>
       conventionService.rejectConventionByTeacher(id, { reason }),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["conventions"] })
+      queryClient.invalidateQueries({ queryKey: [ConventionCacheKeys.Conventions] })
       toast.success("❌ Convention rejetée", {
         description: "La convention a été rejetée par l'enseignant.",
       })
@@ -166,14 +156,13 @@ export const useRejectConventionByTeacher = () => {
   })
 }
 
-// Hook pour approuver une convention par l'admin
 export const useApproveConventionByAdmin = () => {
   return useMutation({
     mutationFn: (conventionId: number) =>
       conventionService.approveConventionByAdmin(conventionId),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["conventions"] })
+      queryClient.invalidateQueries({ queryKey: [ConventionCacheKeys.Conventions] })
       toast.success("✅ Convention approuvée", {
         description: "La convention a été approuvée par l'administrateur.",
       })
@@ -197,14 +186,13 @@ export const useApproveConventionByAdmin = () => {
   })
 }
 
-// Hook pour rejeter une convention par l'admin
 export const useRejectConventionByAdmin = () => {
   return useMutation({
     mutationFn: ({ id, reason }: { id: number; reason: string }) =>
       conventionService.rejectConventionByAdmin(id, { reason }),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["conventions"] })
+      queryClient.invalidateQueries({ queryKey: [ConventionCacheKeys.Conventions] })
       toast.success("❌ Convention rejetée", {
         description: "La convention a été rejetée par l'administrateur.",
       })
@@ -228,14 +216,13 @@ export const useRejectConventionByAdmin = () => {
   })
 }
 
-// Hook pour mettre à jour une convention par l'entreprise
 export const useUpdateConventionByCompany = () => {
   return useMutation({
     mutationFn: ({ id, companyId, data }: { id: number; companyId: number; data: Record<string, unknown> }) =>
       conventionService.updateConventionByCompany(id, companyId, data),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["conventions"] })
+      queryClient.invalidateQueries({ queryKey: [ConventionCacheKeys.Conventions] })
       toast.success("✅ Convention mise à jour", {
         description: "La convention a été mise à jour par l'entreprise.",
       })
@@ -257,14 +244,12 @@ export const useUpdateConventionByCompany = () => {
   })
 }
 
-// Hook pour télécharger le PDF d'une convention
 export const useDownloadConventionPdf = () => {
   return useMutation({
     mutationFn: (conventionId: number) =>
       conventionService.downloadConventionPdf(conventionId),
 
     onSuccess: (blob, conventionId) => {
-      // Création du lien de téléchargement
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
@@ -295,14 +280,13 @@ export const useDownloadConventionPdf = () => {
   })
 }
 
-// Hook pour uploader le PDF signé
 export const useUploadSignedPdf = () => {
   return useMutation({
     mutationFn: ({ id, file }: { id: number; file: File }) =>
       conventionService.uploadSignedPdf(id, file),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["conventions"] })
+      queryClient.invalidateQueries({ queryKey: [ConventionCacheKeys.Conventions] })
       toast.success("📄 PDF signé uploadé", {
         description: "Le PDF signé a été uploadé avec succès.",
       })
@@ -324,7 +308,6 @@ export const useUploadSignedPdf = () => {
   })
 }
 
-// Hook pour régénérer le PDF d'une convention
 export const useRegenerateConventionPdf = () => {
   return useMutation({
     mutationFn: (id: number) => conventionService.regenerateConventionPdf(id),

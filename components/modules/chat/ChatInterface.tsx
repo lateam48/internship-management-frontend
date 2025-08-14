@@ -50,12 +50,10 @@ export function ChatInterface({
 }: Readonly<ChatInterfaceProps>) {
   const [isClient, setIsClient] = useState(false);
 
-  // Handle hydration
   if (typeof window !== 'undefined' && !isClient) {
     setIsClient(true);
   }
 
-  // Filter participants by role
   const availableParticipants = participants.filter(participant => participant.role === participantRole);
 
   const getParticipantTitle = () => {
@@ -72,7 +70,6 @@ export function ChatInterface({
 
   return (
     <div className="space-y-6 h-full flex flex-col">
-      {/* Header */}
       <div className="flex items-center justify-between flex-shrink-0">
         <div>
           <h1 className="text-2xl font-bold">{title}</h1>
@@ -99,9 +96,7 @@ export function ChatInterface({
         </div>
       </div>
 
-      {/* Chat layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full flex-1 min-h-0">
-        {/* Participants */}
         <ParticipantList
           participants={availableParticipants}
           selectedParticipant={selectedParticipant}
@@ -111,7 +106,6 @@ export function ChatInterface({
           emptyMessage={getParticipantEmptyMessage()}
         />
 
-        {/* Chat area */}
         <div className="lg:col-span-2 h-full">
           <ChatArea
             messages={messages}

@@ -37,7 +37,6 @@ export function MessageInput({
     if (message.trim() && !disabled && !isLoading) {
       onSendMessage(message.trim())
       setMessage('')
-      // Reset textarea height
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto'
       }
@@ -54,7 +53,6 @@ export function MessageInput({
   const handleEmojiClick = (emoji: string) => {
     setMessage(prev => prev + emoji)
     setShowEmojis(false)
-    // Focus back to textarea
     setTimeout(() => {
       textareaRef.current?.focus()
     }, 100)
@@ -63,13 +61,11 @@ export function MessageInput({
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value)
     
-    // Auto-resize textarea
     const textarea = e.target
     textarea.style.height = 'auto'
     textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px'
   }
 
-  // Auto-focus on mount
   useEffect(() => {
     if (!disabled) {
       textareaRef.current?.focus()
@@ -78,7 +74,6 @@ export function MessageInput({
 
   return (
     <div className="flex items-end gap-2 p-4 border-t bg-background">
-      {/* Emoji picker */}
       <Popover open={showEmojis} onOpenChange={setShowEmojis}>
         <PopoverTrigger asChild>
           <Button
@@ -107,7 +102,6 @@ export function MessageInput({
         </PopoverContent>
       </Popover>
 
-      {/* File attachment (placeholder for future) */}
       <Button
         variant="ghost"
         size="sm"
@@ -118,7 +112,6 @@ export function MessageInput({
         <Paperclip className="h-5 w-5" />
       </Button>
 
-      {/* Message input */}
       <div className="flex-1 relative">
         <Textarea
           ref={textareaRef}
@@ -131,7 +124,6 @@ export function MessageInput({
           rows={1}
         />
         
-        {/* Character count */}
         {message.length > 0 && (
           <div className="absolute bottom-2 right-2">
             <Badge variant="secondary" className="text-xs">
@@ -141,7 +133,6 @@ export function MessageInput({
         )}
       </div>
 
-      {/* Send button */}
       <Button
         onClick={handleSend}
         disabled={!message.trim() || disabled || isLoading}

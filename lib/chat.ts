@@ -13,7 +13,6 @@ export const roleLabels: Record<ChatRole, string> = {
   [UserRoles.STUDENT]: 'étudiants',
 };
 
-// --- WebSocket Chat Service ---
 
 export type ChatWebSocketEvent =
   | { type: 'message'; data: unknown }
@@ -84,22 +83,16 @@ class ChatWebSocketService {
   private reconnect() {
     if (this.reconnectTimeout) return;
     this.reconnectTimeout = setTimeout(() => {
-      // You should get a fresh token here if needed
-      // this.connect(token)
       this.reconnectTimeout = null;
     }, 3000);
   }
 }
 
-// Usage: import { chatWebSocketService } from '@/lib/chat'
-// chatWebSocketService.connect(token)
-// chatWebSocketService.onEvent(cb)
 
 export const chatWebSocketService = new ChatWebSocketService(
   getEnv().wsUrl ?? ""
 );
 
-// --- STOMP/SockJS Chat Service ---
 type StompMessageListener = (msg: unknown) => void;
 
 class StompChatService {
@@ -121,7 +114,6 @@ class StompChatService {
     });
     this.client.onConnect = () => {
       this.connected = true;
-      // Subscribe to private queue for messages
       this.client?.subscribe('/user/queue/messages', (message: IMessage) => {
         try {
           const data = JSON.parse(message.body);

@@ -6,7 +6,6 @@ import {
   Hash,
   LucideListChecks,
   Briefcase,
-  Building,
   UserRoundPen,
   MessageCircle,
 } from "lucide-react"
@@ -104,13 +103,6 @@ export const navigationConfig: NavigationItem[] = [
         icon: MessageCircle,
         roles: [UserRoles.COMPANY],
       },
-    // Common
-    // {
-    //     title: "Paramètres",
-    //     href: "/dashboard/settings",
-    //     icon: Settings,
-    //     roles: [UserRoles.ADMIN, UserRoles.TEACHER, UserRoles.STUDENT, UserRoles.COMPANY],
-    // },
     {
         title: "Profil",
         href: "/dashboard/profile",

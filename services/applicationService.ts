@@ -72,7 +72,7 @@ const getMyApplications = async () => {
   return response.data;
 };
 
-const getApplicationsByStudent = async (studentId: number) => {
+const getApplicationsByStudent = async () => {
   const response = await apiClient.get<ApplicationResponseDTO[]>(
     `${BASE_URL}/my-applications`
   );
@@ -133,7 +133,7 @@ const getApplicationBundle = async (applicationId: number) => {
 
 
 
-export default {
+const applicationService = {
   createApplication,
   getAllApplications,
   deleteApplication,
@@ -145,3 +145,5 @@ export default {
   getApplicationsByCompany,
   getApplicationBundle,
 };
+
+export default applicationService;

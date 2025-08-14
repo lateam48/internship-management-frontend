@@ -2,6 +2,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/providers";
 import applicationService from "@/services/applicationService";
 import { apiClient } from "@/lib/axios";
+import { ApplicationCacheKeys, ConventionCacheKeys } from "@/services/const";
 
 export const useApplication = (params?: {
   studentId?: number;
@@ -10,25 +11,25 @@ export const useApplication = (params?: {
 }) => {
 
   const getMyApplications = useQuery({
-    queryKey: ["applications", "my-applications"],
+    queryKey: [ApplicationCacheKeys.Applications, ApplicationCacheKeys.MyApplications],
     queryFn: () => applicationService.getMyApplications(),
     enabled: true,
   });
 
   const getStudentApplications = useQuery({
-    queryKey: ["applications", "student", params?.studentId],
+    queryKey: [ApplicationCacheKeys.Applications, ApplicationCacheKeys.Student, params?.studentId],
     queryFn: () => applicationService.getApplicationsByStudent(params!.studentId!),
     enabled: !!params?.studentId,
   });
 
   const getCompanyApplications = useQuery({
-    queryKey: ["applications", "company", params?.companyId],
+    queryKey: [ApplicationCacheKeys.Applications, ApplicationCacheKeys.Company, params?.companyId],
     queryFn: () => applicationService.getApplicationsByCompany(params!.companyId!),
     enabled: !!params?.companyId,
   });
 
   const getOfferApplications = useQuery({
-    queryKey: ["applications", "offer", params?.offerId],
+    queryKey: [ApplicationCacheKeys.Applications, ApplicationCacheKeys.Offer, params?.offerId],
     queryFn: () => applicationService.getApplicationsByOffer(params!.offerId!),
     enabled: !!params?.offerId,
   });
@@ -58,7 +59,7 @@ export const useApplication = (params?: {
       ),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["applications"] });
+      queryClient.invalidateQueries({ queryKey: [ApplicationCacheKeys.Applications] });
     },
   });
 
@@ -85,7 +86,7 @@ export const useApplication = (params?: {
       ),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["applications"] });
+      queryClient.invalidateQueries({ queryKey: [ApplicationCacheKeys.Applications] });
     },
   });
 
@@ -94,7 +95,7 @@ export const useApplication = (params?: {
       applicationService.updateStatus(id, status),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["applications"] });
+      queryClient.invalidateQueries({ queryKey: [ApplicationCacheKeys.Applications] });
     },
   });
 
@@ -103,7 +104,7 @@ export const useApplication = (params?: {
       applicationService.deleteApplication(id, studentId),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["applications"] });
+      queryClient.invalidateQueries({ queryKey: [ApplicationCacheKeys.Applications] });
     },
   });
 
@@ -113,8 +114,8 @@ export const useApplication = (params?: {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["applications"] });
-      queryClient.invalidateQueries({ queryKey: ["conventions"] });
+      queryClient.invalidateQueries({ queryKey: [ApplicationCacheKeys.Applications] });
+      queryClient.invalidateQueries({ queryKey: [ConventionCacheKeys.Conventions] });
     },
   });
 

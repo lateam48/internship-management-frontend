@@ -28,7 +28,6 @@ export function MessageBubble({
 }: Readonly<MessageBubbleProps>) {
   const [isClient, setIsClient] = useState(false)
 
-  // Handle hydration
   if (typeof window !== 'undefined' && !isClient) {
     setIsClient(true)
   }
@@ -58,11 +57,8 @@ export function MessageBubble({
     onDeleteMessage?.(message.id)
   }
 
-  // Use the real sender name from the message
   const senderName = message.senderName || ''
 
-  // Own messages go to the left with gray background
-  // Received messages go to the right with blue background
   const shouldShowOnRight = !isOwnMessage
   const shouldShowBlueBackground = !isOwnMessage
 
@@ -89,7 +85,6 @@ export function MessageBubble({
             <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">{message.content}</p>
           </div>
           
-          {/* Actions menu */}
           <div className={`absolute top-1 ${shouldShowOnRight ? '-left-12' : '-right-12'} opacity-0 group-hover:opacity-100 transition-opacity`}>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -117,7 +112,6 @@ export function MessageBubble({
           </div>
         </div>
         
-        {/* Message metadata */}
         <div className={`flex items-center gap-2 mt-1 ${shouldShowOnRight ? 'order-1' : 'order-2'}`}>
           <span className="text-xs text-muted-foreground">
             {formatTime(message.createdAt)}
@@ -134,7 +128,6 @@ export function MessageBubble({
           )}
         </div>
         
-        {/* Reactions */}
         {message.reactions && Array.isArray(message.reactions) && message.reactions.length > 0 && (
           <div className={`flex flex-wrap gap-1 mt-1 ${shouldShowOnRight ? 'justify-end' : 'justify-start'}`}>
             {message.reactions.map((reaction) => (
