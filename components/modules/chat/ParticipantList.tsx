@@ -32,7 +32,6 @@ export function ParticipantList({
 }: Readonly<ParticipantListProps>) {
   const [isClient, setIsClient] = useState(false)
 
-  // Handle hydration
   if (typeof window !== 'undefined' && !isClient) {
     setIsClient(true)
   }
@@ -103,7 +102,6 @@ export function ParticipantList({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* Participant sélectionné - Affichage détaillé */}
         {selectedParticipant && (
           <div className="mt-4 p-3 bg-muted/50 rounded-lg">
             <div className="flex items-center gap-3">

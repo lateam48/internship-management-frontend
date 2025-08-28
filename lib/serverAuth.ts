@@ -3,7 +3,6 @@ import { UserRole } from "@/types";
 import type { AuthSession } from "@/types/next-auth"
 import { auth } from "@/lib/auth";
 
-// Centralized authentication logic
 export async function authenticate(redirectPath = "/login") {
     const session = (await auth()) as AuthSession | null;
 
@@ -14,7 +13,6 @@ export async function authenticate(redirectPath = "/login") {
     return session;
 }
 
-// Centralized authorization logic
 export async function authorize(
     session: AuthSession | null,
     allowedRoles: UserRole[],
@@ -30,7 +28,6 @@ export async function authorize(
     return true;
 }
 
-// Combined authentication + authorization
 export async function getAuthenticatedUser(options?: {
     allowedRoles?: UserRole[];
     authRedirect?: string;

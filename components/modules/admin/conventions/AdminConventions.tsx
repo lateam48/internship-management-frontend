@@ -6,6 +6,7 @@ import { AdminConventionsHeader, AdminConventionsStats, AdminConventionsFilters,
 
 export function AdminConventions() {
   const [statusFilter, setStatusFilter] = useState("ALL")
+  const [searchQuery, setSearchQuery] = useState("")
   const [approvingId, setApprovingId] = useState<number | null>(null)
   const [rejectingId, setRejectingId] = useState<number | null>(null)
 
@@ -15,11 +16,19 @@ export function AdminConventions() {
   const downloadPdfMutation = useDownloadConventionPdf()
 
   const filteredConventions = conventions?.filter((conv) => {
-    return statusFilter === "ALL" || conv.status === statusFilter
+    const matchesStatus = statusFilter === "ALL" || conv.status === statusFilter
+    const matchesSearch = !searchQuery || 
+      (conv.title?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+      (conv.studentName?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+      (conv.companyName?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+      (conv.location?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
+    
+    return matchesStatus && matchesSearch
   })
 
-  const handleFiltersChange = useCallback((filters: { status: string }) => {
+  const handleFiltersChange = useCallback((filters: { status: string; search?: string }) => {
     setStatusFilter(filters.status)
+    setSearchQuery(filters.search || "")
   }, [])
 
   const handleApprove = (conventionId: number) => {

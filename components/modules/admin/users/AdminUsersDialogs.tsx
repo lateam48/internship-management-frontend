@@ -183,10 +183,22 @@ export function AdminUsersEditDialog({ isOpen, onClose, user, updateUserMutation
         username: user.username,
         password: "",
         role: user.role,
+        sectorId: user.sector?.id,
       })
     }
     if (!isOpen) form.reset()
   }, [user, isOpen, form])
+
+  const currentValues = form.watch()
+  const hasChanges = user && (
+    currentValues.email !== user.email ||
+    currentValues.firstName !== user.firstName ||
+    currentValues.lastName !== user.lastName ||
+    currentValues.username !== user.username ||
+    currentValues.role !== user.role ||
+    currentValues.sectorId !== user.sector?.id ||
+    (currentValues.password && currentValues.password.length > 0)
+  )
 
   const onSubmit = async (values: UserFormValues) => {
     if (!user) return
@@ -284,7 +296,11 @@ export function AdminUsersEditDialog({ isOpen, onClose, user, updateUserMutation
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <SubmitButton loading={updateUserMutation.isPending} label="Update User" />
+            <SubmitButton 
+              loading={updateUserMutation.isPending} 
+              label="Update User" 
+              disabled={!hasChanges}
+            />
           </DialogFooter>
         </form>
       </DialogContent>

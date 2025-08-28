@@ -82,7 +82,7 @@ export function AdminOfferDetailsCard({
           </div>
           <div className="flex items-center">
             <Clock className="h-5 w-5 mr-2 text-muted-foreground" />
-            <span>{offer.length * 4} semaines</span>
+            <span>{offer.length} mois</span>
           </div>
         </div>
 

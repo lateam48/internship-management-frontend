@@ -1,6 +1,3 @@
-// Simple getEnv function for accessing environment variables in a unified way
-// Usage: getEnv().apiUrl, getEnv().baseUrl, getEnv().authUrl, getEnv().authSecret
-
 export function getEnv() {
   const env = {
     baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
@@ -12,7 +9,6 @@ export function getEnv() {
 
   Object.entries(env).forEach(([key, value]) => {
     if (!value) {
-      // Only log in development mode on client, always log on server
       if (
         (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') ||
         typeof window === 'undefined'

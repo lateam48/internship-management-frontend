@@ -26,7 +26,6 @@ export const userManagementService = {
     const response = await apiClient.put<User>(`${BASE_URL}/${id}`, data)
     return response.data
   },
-  // Staff methods
   getAllStaff: async (role?: UserRole) => {
     const params = role ? { role } : {};
     const response = await apiClient.get<User[]>(`${STAFF_URL}`, { params });

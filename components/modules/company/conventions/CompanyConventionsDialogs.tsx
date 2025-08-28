@@ -99,7 +99,6 @@ export function CompanyConventionsDialogs({
     onCloseEdit()
   }
 
-  // Upload PDF
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -118,7 +117,6 @@ export function CompanyConventionsDialogs({
 
   return (
     <>
-      {/* Edit Dialog */}
       <Dialog open={!!editingConvention} onOpenChange={onCloseEdit}>
         <DialogContent className="my-6 p-4 h-full max-h-[80vh] overflow-y-auto">
           <DialogHeader className="pb-2">
@@ -318,7 +316,6 @@ export function CompanyConventionsDialogs({
         </DialogContent>
       </Dialog>
 
-      {/* Upload Dialog */}
       <Dialog open={!!uploadingConvention} onOpenChange={onCloseUpload}>
         <DialogContent className="my-6 p-4 h-full max-h-[80vh] overflow-y-auto">
           <DialogHeader className="pb-2">

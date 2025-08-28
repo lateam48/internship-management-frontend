@@ -43,12 +43,12 @@ export function CompanyOfferDetailsCard({ offer, loading }: CompanyOfferDetailsC
       <CardContent className="space-y-6">
         <div>
           <h3 className="text-lg font-semibold mb-2">Description</h3>
-          <p className="text-gray-700 whitespace-pre-wrap">{offer.description}</p>
+          <p className="text-muted-foreground whitespace-pre-wrap">{offer.description}</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex items-center">
             <Clock className="h-5 w-5 mr-2 text-gray-500" />
-            <span>{offer.length} semaines</span>
+            <span>{offer.length} mois</span>
           </div>
           <div className="flex items-center">
             <Users className="h-5 w-5 mr-2 text-gray-500" />

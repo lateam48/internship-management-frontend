@@ -16,18 +16,19 @@ export function CompanyApplications() {
   const { data: conventions } = useCompanyConventions(userId ?? 0)
   const { data: applications, isLoading } = getCompanyApplications
 
-  // Filter state
   const [search, setSearch] = useState("")
   const [status, setStatus] = useState("all")
 
-  // Filter applications
   const filteredApplications = (applications ?? []).filter(app => {
     const matchesStatus = status === "all" || app.status === status.toUpperCase()
+    const fullName = `${app.firstName} ${app.lastName}`.toLowerCase()
+    const searchTerm = search.toLowerCase().trim()
     const matchesSearch =
       search === "" ||
-      app.firstName.toLowerCase().includes(search.toLowerCase()) ||
-      app.lastName.toLowerCase().includes(search.toLowerCase()) ||
-      app.offerTitle.toLowerCase().includes(search.toLowerCase())
+      app.firstName.toLowerCase().includes(searchTerm) ||
+      app.lastName.toLowerCase().includes(searchTerm) ||
+      fullName.includes(searchTerm) ||
+      app.offerTitle.toLowerCase().includes(searchTerm)
     return matchesStatus && matchesSearch
   })
 

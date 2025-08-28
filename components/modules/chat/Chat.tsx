@@ -36,17 +36,13 @@ export function Chat() {
   const currentUserId = session?.user?.id ? parseInt(session.user.id) : undefined;
   const userRole = session?.user?.role?.toUpperCase();
 
-  // Only allow chat for roles in CHAT_ROLES
   if (!userRole || !CHAT_ROLES.includes(userRole as ChatRole)) {
     return <div className="text-center text-muted-foreground py-8">Chat non disponible pour ce rôle.</div>;
   }
 
-  // Show all other roles as participants except the current user's role
   const participantRoles = CHAT_ROLES.filter(role => role !== userRole);
-  // For now, pick the first other role as the participantRole (can be extended for multi-role chat)
   const participantRole = participantRoles[0];
 
-  // Dynamic title
   const title = `Chat avec les ${roleLabels[participantRole] || (participantRole as string).toLowerCase()}`;
 
   return <ChatInterface {...{

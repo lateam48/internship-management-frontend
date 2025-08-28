@@ -74,7 +74,7 @@ export function CompanyConventionsCard({
     await regeneratePdfMutation.mutateAsync(convention.id)
     setTimeout(() => {
       onDownloadPdf.mutate(convention.id)
-    }, 1000) // attendre 1s pour laisser le backend générer le PDF
+    }, 1000)
   }
 
   return (

@@ -39,7 +39,6 @@ export interface CreateConventionFormData {
   weeklyHours: string
 }
 
-// Zod schemas
 export const createConventionFormSchema = z.object({
   title: z.string().min(1, "Le titre est requis"),
   description: z.string().min(1, "La description est requise"),
@@ -55,7 +54,6 @@ export const createConventionFormSchema = z.object({
 
 export type CreateConventionFormSchema = z.infer<typeof createConventionFormSchema>
 
-// Mutation types
 export type UpdateApplicationStatusMutation = UseMutationResult<
   unknown,
   Error,

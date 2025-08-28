@@ -12,7 +12,6 @@ import {
 
 const BASE_URL = "/chat";
 
-// Utility to map backend participant to ChatParticipant
 function mapParticipant(raw: unknown): ChatParticipant {
   const obj = raw as Record<string, unknown>;
   return {
@@ -26,7 +25,6 @@ function mapParticipant(raw: unknown): ChatParticipant {
   };
 }
 
-// Utility to map backend message to ChatMessage
 function mapMessage(raw: unknown): ChatMessage {
   const obj = raw as Record<string, unknown>;
   return {
@@ -44,7 +42,6 @@ function mapMessage(raw: unknown): ChatMessage {
   };
 }
 
-// Utility to map backend conversation to ChatRoom
 function mapConversation(raw: unknown): ChatRoom {
   const obj = raw as Record<string, unknown>;
   return {
@@ -60,7 +57,6 @@ function mapConversation(raw: unknown): ChatRoom {
 }
 
 class ChatService {
-  // GET /chat/conversations
   async getConversations(): Promise<ChatApiResponse<ChatRoom[]>> {
     const res = await apiClient.get(`${BASE_URL}/conversations`);
     const data = Array.isArray(res.data)
@@ -73,7 +69,6 @@ class ChatService {
     };
   }
 
-  // GET /chat/conversation/{userId}
   async getConversation(userId: number): Promise<ChatApiResponse<ChatMessage[]>> {
     const res = await apiClient.get(`${BASE_URL}/conversation/${userId}`);
     const data = Array.isArray(res.data)
@@ -86,7 +81,6 @@ class ChatService {
     };
   }
 
-  // POST /chat
   async sendMessage(request: SendMessageRequest): Promise<ChatApiResponse<ChatMessage>> {
     const res = await apiClient.post(`${BASE_URL}`, {
       content: request.content,
@@ -99,7 +93,6 @@ class ChatService {
     };
   }
 
-  // GET /chat/unread/count
   async getUnreadCount(): Promise<ChatApiResponse<number>> {
     const res = await apiClient.get(`${BASE_URL}/unread/count`);
     return {
@@ -109,7 +102,6 @@ class ChatService {
     };
   }
 
-  // PUT /chat/read/{senderId}
   async markAsRead(senderId: number): Promise<ChatApiResponse<void>> {
     await apiClient.put(`${BASE_URL}/read/${senderId}`);
     return {
@@ -119,7 +111,6 @@ class ChatService {
     };
   }
 
-  // POST /chat/message/{id}/react?reaction={emoji}
   async addReaction(messageId: string, emoji: string): Promise<ChatApiResponse<void>> {
     await apiClient.post(`${BASE_URL}/message/${messageId}/react?reaction=${encodeURIComponent(emoji)}`);
     return {
@@ -129,7 +120,6 @@ class ChatService {
     };
   }
 
-  // DELETE /chat/message/{messageId}
   async deleteMessage(messageId: string): Promise<ChatApiResponse<void>> {
     await apiClient.delete(`${BASE_URL}/message/${messageId}`);
     return {
@@ -139,7 +129,6 @@ class ChatService {
     };
   }
 
-  // DELETE /chat/all
   async deleteAllMessages(): Promise<ChatApiResponse<void>> {
     await apiClient.delete(`${BASE_URL}/all`);
     return {
