@@ -300,8 +300,9 @@ pnpm lint     # Linting du code
 ### 🚧 En développement
 - Système de rappels automatiques
 - Statistiques avancées
-- Export de données
 - API de notifications email
+- Export de données
+
 
 ### 📋 Roadmap
 - Module de reporting
