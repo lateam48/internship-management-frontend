@@ -268,6 +268,7 @@ types/                    # Types TypeScript
    ```
 
 4. **Lancer le serveur de développement**
+
    ```bash
    pnpm dev
    # ou
