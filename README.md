@@ -312,6 +312,7 @@ pnpm lint     # Linting du code
 
 **Version** : 0.1.0  
 **Dernière mise à jour** : 2025  
-**Équipe** : 48 étudiants  
 **Licence** : Voir fichier LICENSE
+**Équipe** : 48 étudiants  
+
 
