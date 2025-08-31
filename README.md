@@ -366,7 +366,7 @@ pnpm lint     # Linting du code
 **Version** : 0.1.0  
 **Dernière mise à jour** : 2025  
 **Licence** : Voir fichier LICENSE
-**Équipe** : 48 étudiants  
+**Équipe** : Team 48  | Jake Melvin TIOKOU  - Belvinard POUADJEU - YOUMSSI TOGUEM Jean Vincent - Hassan Mahamat DOGO - Loïc Luc KENMOE MBEUKEM
 
 
 
