@@ -2,6 +2,17 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Edit, Trash2, Building2 } from "lucide-react"
 import { Sector } from "@/types"
 
@@ -64,18 +75,35 @@ export function AdminSectorsGrid({
                 <Edit className="h-4 w-4 mr-1" />
                 Modifier
               </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => onDelete(sector.id)}
-                className=""
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className=""
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Supprimer le secteur ?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Cette action est irréversible. Le secteur sera définitivement supprimé.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => onDelete(sector.id)}>
+                      Confirmer
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </CardContent>
         </Card>
       ))}
     </div>
   )
-} 
+}
