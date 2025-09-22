@@ -18,6 +18,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
   // Select only the needed actions to avoid resubscribing to the whole store
   const initializeChat = useChatStoreV2((s) => s.initializeChat);
   const cleanupChat = useChatStoreV2((s) => s.cleanupChat);
+  const setCurrentUserId = useChatStoreV2((s) => s.setCurrentUserId);
 
   // Keep stable refs for actions to avoid adding them in effect deps
   const initRef = useRef(initializeChat);
@@ -36,6 +37,8 @@ export function ChatProvider({ children }: ChatProviderProps) {
     const userRole = session?.user?.role;
     const token = session?.accessToken;
     const authKey = `${userRole ?? ''}|${token ?? ''}`;
+    const userIdStr = session?.user?.id;
+    const currentUserId = userIdStr ? parseInt(userIdStr, 10) : null;
 
     // Only act when the (role, token) pair actually changes
     if (lastAuthKeyRef.current === authKey) return;
@@ -48,6 +51,8 @@ export function ChatProvider({ children }: ChatProviderProps) {
 
     // Initialize for the new authKey if applicable
     if (token && (userRole === 'STUDENT' || userRole === 'COMPANY')) {
+      // Save current user id to the chat store for correct participant detection
+      setCurrentUserId(currentUserId);
       initializedRef.current = true;
       initRef.current(token).catch((error) => {
         console.error('Failed to initialize chat:', error);

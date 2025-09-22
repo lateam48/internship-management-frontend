@@ -178,6 +178,9 @@ export interface ChatState {
   
   // Participants
   eligibleParticipants: ChatParticipant[];
+
+  // Auth context (current logged-in user id, used for client-side logic)
+  currentUserId: number | null;
 }
 
 // Hook Return Types

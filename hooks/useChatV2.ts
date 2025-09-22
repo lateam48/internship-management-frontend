@@ -252,11 +252,20 @@ export function useUnreadBadge() {
  * Hook for eligible participants
  */
 export function useEligibleParticipants() {
+  const { data: session } = useSession();
   const store = useChatStoreV2();
   const participants = store.eligibleParticipants;
   const onlineUsers = useOnlineUsers();
 
-  const participantsWithStatus = participants.map(p => ({
+  // Match legacy behavior: show only opposite role participants
+  const userRole = (session?.user?.role || '').toString().toUpperCase();
+  const targetRole = userRole === 'STUDENT' ? 'COMPANY' : userRole === 'COMPANY' ? 'STUDENT' : null;
+
+  const filtered = targetRole
+    ? participants.filter(p => (p.role || '').toString().toUpperCase() === targetRole)
+    : participants;
+
+  const participantsWithStatus = filtered.map(p => ({
     ...p,
     isOnline: onlineUsers.has(p.id),
   }));

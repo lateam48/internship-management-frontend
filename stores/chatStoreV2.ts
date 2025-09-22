@@ -24,6 +24,8 @@ interface ChatActions {
   // Initialization
   initializeChat: (token: string) => Promise<void>;
   cleanupChat: () => void;
+  // Auth context
+  setCurrentUserId: (userId: number | null) => void;
 
   // Conversations
   loadConversations: () => Promise<void>;
@@ -79,60 +81,70 @@ export const useChatStoreV2 = create<ChatStore>()(
         onlineUsers: new Set(),
         totalUnreadCount: 0,
         eligibleParticipants: [],
+        currentUserId: null,
 
         // Initialize chat
         initializeChat: async (token: string) => {
           try {
-            // Initialize WebSocket
-            const wsService = getChatWebSocketService({
-              apiBaseUrl: process.env.NEXT_PUBLIC_API_URL || '',
-              wsUrl: `${process.env.NEXT_PUBLIC_API_URL}/ws-chat` || '',
-              enableTypingIndicator: true,
-              enablePresence: true,
-              enableReadReceipts: true,
-              messagePageSize: 50,
-            });
+            // Compute correct WS base (must NOT include '/api')
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
+            const wsBase = process.env.NEXT_PUBLIC_WS_URL || (typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}` : '');
+            const wsUrl = wsBase ? `${wsBase}/ws-chat` : '';
 
-            // Connect to WebSocket
-            await wsService.connect(token);
+            // Initialize WebSocket (do not block REST init if it fails)
+            try {
+              const wsService = getChatWebSocketService({
+                apiBaseUrl: apiBase,
+                wsUrl,
+                enableTypingIndicator: true,
+                enablePresence: true,
+                enableReadReceipts: true,
+                messagePageSize: 50,
+              });
 
-            // Setup WebSocket event handlers
-            wsService.onMessage((message) => {
-              get().addMessage(message);
-            });
+              // Connect to WebSocket
+              await wsService.connect(token);
 
-            wsService.onTyping((indicator) => {
-              get().setTypingIndicator(indicator);
-            });
+              // Setup WebSocket event handlers
+              wsService.onMessage((message) => {
+                get().addMessage(message);
+              });
 
-            wsService.onPresence((status) => {
-              if (status.isOnline) {
-                get().setUserOnline(status.userId);
-              } else {
-                get().setUserOffline(status.userId);
-              }
-            });
+              wsService.onTyping((indicator) => {
+                get().setTypingIndicator(indicator);
+              });
 
-            wsService.onReadReceipt((receipt) => {
-              // Update read status for messages
-              set((state) => {
-                const messages = state.messages[receipt.conversationId];
-                if (messages) {
-                  messages.forEach((msg) => {
-                    if (msg.sender.id !== receipt.readerId && !msg.readByUserIds?.includes(receipt.readerId)) {
-                      msg.readByUserIds = [...(msg.readByUserIds || []), receipt.readerId];
-                      msg.status = MessageStatus.READ;
-                    }
-                  });
+              wsService.onPresence((status) => {
+                if (status.isOnline) {
+                  get().setUserOnline(status.userId);
+                } else {
+                  get().setUserOffline(status.userId);
                 }
               });
-            });
 
-            wsService.onDelete((notification) => {
-              get().removeMessage(notification.messageId);
-            });
+              wsService.onReadReceipt((receipt) => {
+                // Update read status for messages
+                set((state) => {
+                  const messages = state.messages[receipt.conversationId];
+                  if (messages) {
+                    messages.forEach((msg) => {
+                      if (msg.sender.id !== receipt.readerId && !msg.readByUserIds?.includes(receipt.readerId)) {
+                        msg.readByUserIds = [...(msg.readByUserIds || []), receipt.readerId];
+                        msg.status = MessageStatus.READ;
+                      }
+                    });
+                  }
+                });
+              });
 
-            // Load initial data
+              wsService.onDelete((notification) => {
+                get().removeMessage(notification.messageId);
+              });
+            } catch (wsError) {
+              console.error('WebSocket connection failed; continuing with REST-only chat init.', wsError);
+            }
+
+            // Load initial REST data regardless of WS status
             await Promise.all([
               get().loadConversations(),
               get().loadEligibleParticipants(),
@@ -144,6 +156,13 @@ export const useChatStoreV2 = create<ChatStore>()(
               state.error = 'Failed to initialize chat';
             });
           }
+        },
+
+        // Set current user id (from session)
+        setCurrentUserId: (userId: number | null) => {
+          set((state) => {
+            state.currentUserId = userId ?? null;
+          });
         },
 
         // Cleanup chat
@@ -245,7 +264,8 @@ export const useChatStoreV2 = create<ChatStore>()(
           const conversation = get().conversations.find(c => c.id === conversationId);
           if (!conversation) return;
 
-          const otherParticipant = conversation.participants.find(p => p.id !== conversation.id);
+          const currentUserId = get().currentUserId;
+          const otherParticipant = conversation.participants.find(p => p.id !== currentUserId);
           if (!otherParticipant) return;
 
           const response = await chatServiceV2.getConversationMessages(otherParticipant.id, page);
@@ -363,7 +383,7 @@ export const useChatStoreV2 = create<ChatStore>()(
               conversation.lastMessageSender = message.sender;
               
               // Increment unread count if not from current user
-              if (message.sender.id !== message.conversationId) {
+              if (state.currentUserId && message.sender.id !== state.currentUserId) {
                 conversation.unreadCount++;
                 state.totalUnreadCount++;
               }

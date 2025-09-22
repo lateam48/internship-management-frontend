@@ -21,6 +21,24 @@ const BASE_URL = '/chat/v2';
  * Handles all REST API interactions for the chat module
  */
 class ChatServiceV2 {
+  private mapParticipant(raw: any): ChatParticipant {
+    const role = (raw?.role ?? '').toString().toUpperCase();
+    const fullName = (raw?.fullName
+      ?? [raw?.firstName, raw?.lastName].filter(Boolean).join(' ')
+      ?? raw?.name
+      ?? '').toString().trim();
+    const username = (raw?.username ?? raw?.email ?? '').toString();
+    const email = (raw?.email ?? raw?.username ?? '').toString();
+    return {
+      id: Number(raw?.id),
+      username,
+      fullName,
+      email,
+      role,
+      isOnline: Boolean(raw?.isOnline ?? false),
+      lastSeen: raw?.lastSeen ?? undefined,
+    } as ChatParticipant;
+  }
   /**
    * Send a new message
    */
@@ -183,10 +201,14 @@ class ChatServiceV2 {
    */
   async getEligibleParticipants(): Promise<ChatApiResponse<ChatParticipant[]>> {
     try {
-      const response = await apiClient.get<ChatParticipant[]>(`${BASE_URL}/participants`);
+      const response = await apiClient.get<any[]>(`${BASE_URL}/participants`);
+      const mapped = (Array.isArray(response.data) ? response.data : [])
+        .map((p) => this.mapParticipant(p))
+        .filter((p) => !!p.id && !!p.fullName)
+        .sort((a, b) => a.fullName.localeCompare(b.fullName, 'fr'));
       return {
         success: true,
-        data: response.data,
+        data: mapped,
         message: 'Participants retrieved successfully',
       };
     } catch (error: any) {
