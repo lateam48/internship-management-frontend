@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/providers";
 import { WebSocketProvider } from "@/contexts/WebSocketContext";
+import { ChatProvider } from "@/providers/ChatProvider";
+import { ToastProvider, Toaster } from "@/hooks/use-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,11 +31,16 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-      <AppProvider>
-        <WebSocketProvider>
-          {children}
-        </WebSocketProvider>
-      </AppProvider>
+      <ToastProvider>
+        <AppProvider>
+          <WebSocketProvider>
+            <ChatProvider>
+              {children}
+            </ChatProvider>
+          </WebSocketProvider>
+        </AppProvider>
+        <Toaster />
+      </ToastProvider>
       </body>
     </html>
   );

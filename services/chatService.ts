@@ -57,84 +57,69 @@ function mapConversation(raw: unknown): ChatRoom {
 }
 
 class ChatService {
+  // Chat is currently disabled and will return empty data
   async getConversations(): Promise<ChatApiResponse<ChatRoom[]>> {
-    const res = await apiClient.get(`${BASE_URL}/conversations`);
-    const data = Array.isArray(res.data)
-      ? res.data.map(mapConversation)
-      : [];
     return {
-      success: true,
-      data,
-      message: "Conversations récupérées avec succès",
+      success: false,
+      data: [],
+      message: "La fonctionnalité de chat est désactivée",
     };
   }
 
   async getConversation(userId: number): Promise<ChatApiResponse<ChatMessage[]>> {
-    const res = await apiClient.get(`${BASE_URL}/conversation/${userId}`);
-    const data = Array.isArray(res.data)
-      ? res.data.map(mapMessage)
-      : [];
     return {
-      success: true,
-      data,
-      message: "Messages de la conversation récupérés",
+      success: false,
+      data: [],
+      message: "La fonctionnalité de chat est désactivée",
     };
   }
 
   async sendMessage(request: SendMessageRequest): Promise<ChatApiResponse<ChatMessage>> {
-    const res = await apiClient.post(`${BASE_URL}`, {
-      content: request.content,
-      recipientName: request.recipientName,
-    });
     return {
-      success: true,
-      data: mapMessage(res.data),
-      message: "Message envoyé avec succès",
+      success: false,
+      // @ts-expect-error disabled
+      data: undefined,
+      message: "La fonctionnalité de chat est désactivée",
     };
   }
 
   async getUnreadCount(): Promise<ChatApiResponse<number>> {
-    const res = await apiClient.get(`${BASE_URL}/unread/count`);
     return {
-      success: true,
-      data: typeof res.data === "number" ? res.data : 0,
-      message: "Nombre de messages non lus récupéré",
+      success: false,
+      data: 0,
+      message: "La fonctionnalité de chat est désactivée",
     };
   }
 
   async markAsRead(senderId: number): Promise<ChatApiResponse<void>> {
-    await apiClient.put(`${BASE_URL}/read/${senderId}`);
     return {
-      success: true,
+      success: false,
       data: undefined,
-      message: "Messages marqués comme lus",
+      message: "La fonctionnalité de chat est désactivée",
     };
   }
 
   async addReaction(messageId: string, emoji: string): Promise<ChatApiResponse<void>> {
-    await apiClient.post(`${BASE_URL}/message/${messageId}/react?reaction=${encodeURIComponent(emoji)}`);
     return {
-      success: true,
+      success: false,
       data: undefined,
-      message: "Réaction ajoutée avec succès",
+      message: "La fonctionnalité de chat est désactivée",
     };
   }
 
   async deleteMessage(messageId: string): Promise<ChatApiResponse<void>> {
-    await apiClient.delete(`${BASE_URL}/message/${messageId}`);
     return {
-      success: true,
+      success: false,
       data: undefined,
-      message: "Message supprimé avec succès",
+      message: "La fonctionnalité de chat est désactivée",
     };
   }
 
   async deleteAllMessages(): Promise<ChatApiResponse<void>> {
-    await apiClient.delete(`${BASE_URL}/all`);
     return {
-      success: true,
+      success: false,
       data: undefined,
-      message: "Tous les messages ont été supprimés",
+      message: "La fonctionnalité de chat est désactivée",
     };
   }
 }

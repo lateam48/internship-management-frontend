@@ -1,9 +1,7 @@
 // Central chat configuration
 
 import { UserRoles } from '@/types';
-import { getEnv } from '@/lib/env';
-import { Client, IMessage } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
+import { Client } from '@stomp/stompjs';
 
 export const CHAT_ROLES = [UserRoles.COMPANY, UserRoles.STUDENT] as const;
 export type ChatRole = typeof CHAT_ROLES[number];
@@ -89,8 +87,9 @@ class ChatWebSocketService {
 }
 
 
+// Chat disabled: instantiate but do not actually connect
 export const chatWebSocketService = new ChatWebSocketService(
-  getEnv().wsUrl ?? ""
+  ""
 );
 
 type StompMessageListener = (msg: unknown) => void;
@@ -101,38 +100,15 @@ class StompChatService {
   private connected = false;
 
   connect(token: string) {
-    if (this.client) {
-      this.disconnect();
-    }
-    this.client = new Client({
-      webSocketFactory: () => new SockJS(getEnv().wsUrl || ''),
-      connectHeaders: {
-        Authorization: `Bearer ${token}`,
-      },
-      debug: () => {},
-      reconnectDelay: 5000,
-    });
-    this.client.onConnect = () => {
-      this.connected = true;
-      this.client?.subscribe('/user/queue/messages', (message: IMessage) => {
-        try {
-          const data = JSON.parse(message.body);
-          this.messageListeners.forEach((cb) => cb(data));
-        } catch {}
-      });
-    };
-    this.client.onDisconnect = () => {
-      this.connected = false;
-    };
-    this.client.activate();
+    // Chat disabled: do not establish any connection
+    this.connected = false;
+    this.client = null;
   }
 
   disconnect() {
-    if (this.client) {
-      this.client.deactivate();
-      this.client = null;
-      this.connected = false;
-    }
+    // Chat disabled: ensure no client
+    this.client = null;
+    this.connected = false;
   }
 
   onMessage(cb: StompMessageListener) {
@@ -143,12 +119,7 @@ class StompChatService {
   }
 
   sendMessage(destination: string, body: unknown) {
-    if (this.client && this.connected) {
-      this.client.publish({
-        destination,
-        body: JSON.stringify(body),
-      });
-    }
+    // Chat disabled: no-op
   }
 }
 
