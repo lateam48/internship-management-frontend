@@ -167,6 +167,27 @@ class ChatServiceV2 {
     }
   }
 
+  async getOnlineUsers(): Promise<ChatApiResponse<number[]>> {
+    try {
+      const response = await apiClient.get<{ onlineUserIds: number[] }>(
+        `${BASE_URL}/presence`
+      );
+      return {
+        success: true,
+        data: Array.isArray(response.data?.onlineUserIds)
+          ? response.data.onlineUserIds.map((id) => Number(id)).filter((n) => !Number.isNaN(n))
+          : [],
+        message: 'Presence retrieved',
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        data: [],
+        error: error.response?.data?.message || 'Failed to get presence',
+      };
+    }
+  }
+
   async getEligibleParticipants(): Promise<ChatApiResponse<ChatParticipant[]>> {
     try {
       const response = await apiClient.get<any[]>(`${BASE_URL}/participants`);

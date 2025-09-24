@@ -321,6 +321,13 @@ export class ChatWebSocketService {
    * Disconnect from WebSocket server
    */
   disconnect(): void {
+    // Notify presence offline before tearing down the connection
+    try {
+      if (this.client?.active) {
+        this.send('/app/chat.disconnect', {});
+      }
+    } catch {}
+
     // Clear all subscriptions
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.subscriptions.clear();

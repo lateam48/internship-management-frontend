@@ -16,14 +16,15 @@ import {
   MoreVertical, 
   Edit2, 
   Trash2, 
-  Reply, 
   Check, 
   CheckCheck,
   Clock,
-  AlertCircle 
+  AlertCircle,
+  Reply
 } from 'lucide-react';
 import { ChatMessage, MessageStatus } from '@/types/chat-v2';
 import { useAuth } from '@/hooks/useAuth';
+import { useChatStoreV2 } from '@/stores/chatStoreV2';
 import { format, isToday, isYesterday } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
@@ -49,12 +50,12 @@ export function ChatMessageList({
   className,
 }: ChatMessageListProps) {
   const { session } = useAuth();
-  const currentUserId = Number(session?.user?.id);
+  const currentUserIdFromStore = useChatStoreV2((s) => s.currentUserId);
+  const currentUserId = currentUserIdFromStore ?? Number(session?.user?.id);
+
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
   const bottomAnchorRef = useRef<HTMLDivElement>(null);
-
-  // Auto-scroll to bottom (newest at bottom) on new messages
   useEffect(() => {
     if (autoScroll && bottomAnchorRef.current) {
       bottomAnchorRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -195,10 +196,12 @@ export function ChatMessageList({
 
                   {/* Message actions */}
                   {!message.isDeleted && (
-                    <div className={cn(
-                      "absolute top-0 -right-8 opacity-0 group-hover:opacity-100 transition-opacity",
-                      !isOwn && "-right-8"
-                    )}>
+                    <div
+                      className={cn(
+                        "absolute top-0 opacity-0 group-hover:opacity-100 transition-opacity z-10",
+                        isOwn ? "-left-8 right-auto" : "-right-8 left-auto"
+                      )}
+                    >
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
@@ -221,7 +224,12 @@ export function ChatMessageList({
                                 Modifier
                               </DropdownMenuItem>
                               <DropdownMenuItem 
-                                onClick={() => onDeleteMessage(message.id)}
+                                onClick={() => {
+                                  const ok = typeof window !== 'undefined'
+                                    ? window.confirm('Supprimer ce message ?')
+                                    : true;
+                                  if (ok) onDeleteMessage(message.id);
+                                }}
                                 className="text-destructive"
                               >
                                 <Trash2 className="h-4 w-4 mr-2" />
