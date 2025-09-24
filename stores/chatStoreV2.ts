@@ -31,6 +31,8 @@ interface ChatActions {
   cleanupChat: () => void;
   // Auth context
   setCurrentUserId: (userId: number | null) => void;
+  // UI visibility
+  setChatOpen: (open: boolean) => void;
 
   // Conversations
   loadConversations: () => Promise<void>;
@@ -81,6 +83,7 @@ export const useChatStoreV2 = create<ChatStore>()(
         messages: {},
         isLoading: false,
         isSending: false,
+        isChatOpen: false,
         error: null,
         typingUsers: {},
         onlineUsers: new Set(),
@@ -88,10 +91,10 @@ export const useChatStoreV2 = create<ChatStore>()(
         eligibleParticipants: [],
         currentUserId: null,
 
-        // Initialize chat
+        // Initialize chat (WebSocket + initial REST data)
         initializeChat: async (token: string) => {
           try {
-            // Compute correct WS base (must NOT include '/api')
+            // Compute WS URL
             const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
             const wsBase = process.env.NEXT_PUBLIC_WS_URL || (typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}` : '');
             const wsUrl = process.env.NEXT_PUBLIC_WS_CHAT_URL || wsBase;
@@ -107,18 +110,15 @@ export const useChatStoreV2 = create<ChatStore>()(
                 messagePageSize: 50,
               });
 
-              // Connect to WebSocket
               await wsService.connect(token);
 
-              // Setup WebSocket event handlers
+              // WS handlers
               wsService.onMessage((message) => {
                 get().addMessage(message);
               });
-
               wsService.onTyping((indicator) => {
                 get().setTypingIndicator(indicator);
               });
-
               wsService.onPresence((status) => {
                 if (status.isOnline) {
                   get().setUserOnline(status.userId);
@@ -126,9 +126,7 @@ export const useChatStoreV2 = create<ChatStore>()(
                   get().setUserOffline(status.userId);
                 }
               });
-
               wsService.onReadReceipt((receipt) => {
-                // Update read status for messages
                 set((state) => {
                   const messages = state.messages[receipt.conversationId];
                   if (messages) {
@@ -141,7 +139,6 @@ export const useChatStoreV2 = create<ChatStore>()(
                   }
                 });
               });
-
               wsService.onDelete((notification) => {
                 get().removeMessage(notification.messageId);
               });
@@ -149,7 +146,7 @@ export const useChatStoreV2 = create<ChatStore>()(
               console.error('WebSocket connection failed; continuing with REST-only chat init.', wsError);
             }
 
-            // Load initial REST data regardless of WS status
+            // Load initial REST data
             await Promise.all([
               get().loadConversations(),
               get().loadEligibleParticipants(),
@@ -157,24 +154,16 @@ export const useChatStoreV2 = create<ChatStore>()(
             ]);
           } catch (error) {
             console.error('Failed to initialize chat:', error);
-            set((state) => {
-              state.error = 'Failed to initialize chat';
-            });
+            set((state) => { state.error = 'Failed to initialize chat'; });
           }
-        },
-
-        // Set current user id (from session)
-        setCurrentUserId: (userId: number | null) => {
-          set((state) => {
-            state.currentUserId = userId ?? null;
-          });
         },
 
         // Cleanup chat
         cleanupChat: () => {
-          const wsService = getChatWebSocketService();
-          wsService.disconnect();
-          
+          try {
+            const wsService = getChatWebSocketService();
+            wsService.disconnect();
+          } catch {}
           set((state) => {
             state.conversations = [];
             state.activeConversationId = null;
@@ -187,18 +176,20 @@ export const useChatStoreV2 = create<ChatStore>()(
           });
         },
 
+        // Set current user id (from session)
+        setCurrentUserId: (userId: number | null) => {
+          set((state) => {
+            state.currentUserId = userId ?? null;
+          });
+        },
+
         // Load conversations
         loadConversations: async () => {
-          set((state) => {
-            state.isLoading = true;
-          });
-
+          set((state) => { state.isLoading = true; });
           const response = await chatServiceV2.getConversations();
-
           if (response.success && response.data) {
-            const data = response.data; // narrow to non-undefined
             set((state) => {
-              state.conversations = data.content;
+              state.conversations = response.data!.content;
               state.isLoading = false;
             });
           } else {
@@ -209,48 +200,46 @@ export const useChatStoreV2 = create<ChatStore>()(
           }
         },
 
-        // Set active conversation
+        // Set active conversation with visibility guard
         setActiveConversation: (conversationId: number | null) => {
-          set((state) => {
-            state.activeConversationId = conversationId;
-          });
-
+          set((state) => { state.activeConversationId = conversationId; });
           if (conversationId) {
             // Subscribe to conversation events
-            const wsService = getChatWebSocketService();
-            wsService.subscribeToConversation(conversationId);
+            try {
+              const wsService = getChatWebSocketService();
+              wsService.subscribeToConversation(conversationId);
+            } catch {}
 
-            // Load messages if not already loaded
-            if (!get().messages[conversationId]) {
-              get().loadMessages(conversationId);
+            // Always fetch the latest page to ensure we have full context (not only unread)
+            get().loadMessages(conversationId);
+
+            // Mark as read only when chat UI is visible
+            if (get().isChatOpen) {
+              get().markAsRead(conversationId);
             }
-
-            // Mark as read
-            get().markAsRead(conversationId);
           }
         },
 
         // Get or create conversation
         getOrCreateConversation: async (userId: number) => {
-          set((state) => {
-            state.isLoading = true;
-          });
+          set((state) => { state.isLoading = true; });
 
           const response = await chatServiceV2.getOrCreateConversation(userId);
           
           if (response.success && response.data) {
+            const conv = response.data;
             set((state) => {
               // Add conversation if not exists
-              const exists = state.conversations.find(c => c.id === response.data!.id);
+              const exists = state.conversations.find(c => c.id === conv!.id);
               if (!exists) {
-                state.conversations.unshift(response.data!);
+                state.conversations.unshift(conv!);
               }
-              state.activeConversationId = response.data!.id;
+              // Loading flag handled after we set active below
               state.isLoading = false;
             });
 
-            // Load messages
-            await get().loadMessages(response.data.id);
+            // Use the standard setter to ensure subscription + mark-as-read behavior
+            get().setActiveConversation(conv.id);
           } else {
             set((state) => {
               state.error = response.error || 'Failed to create conversation';
@@ -295,6 +284,9 @@ export const useChatStoreV2 = create<ChatStore>()(
               state.messages[conversationId] = sorted;
               state.isLoading = false;
             });
+
+            // Note: do not call markAsRead here to avoid multiple cascading updates.
+            // We already mark as read in setActiveConversation when the chat UI is visible.
           } else {
             set((state) => {
               state.error = response.error || 'Failed to load messages';
@@ -443,11 +435,17 @@ export const useChatStoreV2 = create<ChatStore>()(
 
         // Add message
         addMessage: (message: ChatMessage) => {
+          const stateNow = useChatStoreV2.getState();
+          const isActive = stateNow.activeConversationId === message.conversationId;
+          const isChatOpen = stateNow.isChatOpen === true;
+          const hasCurrent = stateNow.currentUserId != null;
+          const isFromOther = hasCurrent && message.sender.id !== stateNow.currentUserId!;
+
           set((state) => {
             if (!state.messages[message.conversationId]) {
               state.messages[message.conversationId] = [];
             }
-            
+
             // Check if message already exists
             const exists = state.messages[message.conversationId].find(m => m.id === message.id);
             if (!exists) {
@@ -455,19 +453,50 @@ export const useChatStoreV2 = create<ChatStore>()(
               state.messages[message.conversationId].push(message);
             }
 
-            // Update conversation
+            // Update conversation preview
             const conversation = state.conversations.find(c => c.id === message.conversationId);
             if (conversation) {
               conversation.lastMessagePreview = message.content;
               conversation.lastMessageAt = message.createdAt;
               conversation.lastMessageSender = message.sender;
-              
-              // Increment unread count if not from current user
-              if (state.currentUserId && message.sender.id !== state.currentUserId) {
-                conversation.unreadCount++;
-                state.totalUnreadCount++;
+
+              // If the message is from another user
+              if (isFromOther) {
+                if (isActive && isChatOpen) {
+                  // Auto-mark as read in UI and prevent unread counters from increasing
+                  const msgs = state.messages[message.conversationId];
+                  const last = msgs[msgs.length - 1];
+                  if (last && last.id === message.id) {
+                    last.isRead = true;
+                    last.status = MessageStatus.READ;
+                  }
+                  // If any unread count existed, clear it and adjust total
+                  if (conversation.unreadCount > 0) {
+                    state.totalUnreadCount -= conversation.unreadCount;
+                    conversation.unreadCount = 0;
+                  }
+                } else {
+                  // Not active: increment unread counters
+                  conversation.unreadCount++;
+                  state.totalUnreadCount++;
+                }
               }
             }
+          });
+
+          // If conversation is active, notify backend and send read receipt
+          if (isActive && isChatOpen && isFromOther) {
+            // Fire-and-forget; avoid blocking UI
+            chatServiceV2.markConversationAsRead(message.conversationId).catch(() => {});
+            const wsService = getChatWebSocketService();
+            wsService.sendReadReceipt(message.conversationId);
+          }
+        },
+
+        // Set chat open/visible state (controlled by UI container e.g., ChatWidget)
+        setChatOpen: (open: boolean) => {
+          set((state) => {
+            state.isChatOpen = open;
           });
         },
 

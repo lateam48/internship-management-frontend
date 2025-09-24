@@ -165,6 +165,7 @@ export interface ChatState {
   // UI State
   isLoading: boolean;
   isSending: boolean;
+  isChatOpen: boolean;
   error: string | null;
   
   // Typing indicators

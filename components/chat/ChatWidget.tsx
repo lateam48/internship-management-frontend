@@ -13,6 +13,7 @@ import { MessageCircle, X, Minimize2, Maximize2 } from 'lucide-react';
 import { ChatModule } from './ChatModule';
 import { useTotalUnreadCount, useChatConnectionStatus } from '@/hooks/useChatV2';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useChatStoreV2 } from '@/stores/chatStoreV2';
 
 interface ChatWidgetProps {
   position?: 'bottom-right' | 'bottom-left';
@@ -30,6 +31,9 @@ export function ChatWidget({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const totalUnreadCount = useTotalUnreadCount();
   const { isConnected } = useChatConnectionStatus();
+  const setChatOpen = useChatStoreV2((s) => s.setChatOpen);
+  const activeConversationId = useChatStoreV2((s) => s.activeConversationId);
+  const markAsRead = useChatStoreV2((s) => s.markAsRead);
 
   // Play notification sound on new messages
   useEffect(() => {
@@ -39,6 +43,20 @@ export function ChatWidget({
       audio.play().catch(() => {});
     }
   }, [totalUnreadCount, isOpen]);
+
+  // Sync chat visibility with store: visible only when open and not minimized
+  useEffect(() => {
+    const visible = isOpen && !isMinimized;
+    setChatOpen(visible);
+    // If the chat is now visible and there's an active conversation, mark it as read
+    if (visible && activeConversationId) {
+      markAsRead(activeConversationId);
+    }
+    return () => {
+      // On unmount, ensure it's marked as not visible
+      setChatOpen(false);
+    };
+  }, [isOpen, isMinimized, setChatOpen, activeConversationId, markAsRead]);
 
   const positionClasses = {
     'bottom-right': 'bottom-4 right-4',

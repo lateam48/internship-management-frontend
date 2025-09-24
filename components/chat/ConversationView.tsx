@@ -3,11 +3,12 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ChatMessage, ChatParticipant } from '@/types/chat-v2';
-import { useChat, useTypingUsers } from '@/hooks/useChatV2';
+import { useChat, useTypingUsers, useMessagePagination } from '@/hooks/useChatV2';
 import { useChatStoreV2 } from '@/stores/chatStoreV2';
 import { ChatHeader } from './ChatHeader';
 import { ChatMessageList } from './ChatMessageList';
 import { ChatMessageInput } from './ChatMessageInput';
+import ChatConversationSkeleton from './ChatConversationSkeleton';
 
 interface ConversationViewProps {
   participant?: ChatParticipant | null;
@@ -21,11 +22,12 @@ export function ConversationView({ participant, className, onBack }: Conversatio
   const {
     activeConversation,
     messages,
+    isLoading,
     sendMessage,
     updateMessage,
     deleteMessage,
-    loadMoreMessages,
   } = useChat();
+  const { messages: paginatedMessages, hasMore, isLoadingMore, loadMore } = useMessagePagination(activeConversation?.id || null);
   const typingUsers = useTypingUsers();
 
   const [editingMessage, setEditingMessage] = useState<ChatMessage | null>(null);
@@ -61,15 +63,20 @@ export function ConversationView({ participant, className, onBack }: Conversatio
       />
 
       {/* Messages */}
-      <ChatMessageList
-        messages={messages}
-        onEditMessage={setEditingMessage}
-        onDeleteMessage={deleteMessage}
-        onReplyMessage={setReplyingTo}
-        onLoadMore={() => activeConversation && loadMoreMessages(activeConversation.id)}
-        hasMore={(messages?.length || 0) >= 50}
-        className="flex-1"
-      />
+      {isLoading && (paginatedMessages?.length || 0) === 0 ? (
+        <ChatConversationSkeleton className="h-full" />
+      ) : (
+        <ChatMessageList
+          messages={paginatedMessages}
+          onEditMessage={setEditingMessage}
+          onDeleteMessage={deleteMessage}
+          onReplyMessage={setReplyingTo}
+          onLoadMore={() => activeConversation && loadMore()}
+          hasMore={hasMore}
+          isLoadingMore={isLoadingMore}
+          className="flex-1"
+        />
+      )}
 
       {/* Input */}
       <ChatMessageInput

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { ChatParticipant } from '@/types/chat-v2';
 import { useChatStoreV2 } from '@/stores/chatStoreV2';
@@ -14,9 +14,26 @@ interface ChatPanelProps {
 
 const ChatPanel = ({ className }: ChatPanelProps) => {
   const store = useChatStoreV2();
+  const setChatOpen = useChatStoreV2((s) => s.setChatOpen);
+  const activeConversationId = useChatStoreV2((s) => s.activeConversationId);
+  const markAsRead = useChatStoreV2((s) => s.markAsRead);
   const [view, setView] = useState<'participants' | 'conversation'>('participants');
   const [selectedParticipant, setSelectedParticipant] = useState<ChatParticipant | null>(null);
   const [isLoadingConv, setIsLoadingConv] = useState(false);
+
+  // Consider the chat visible while this panel is mounted (page/full view)
+  useEffect(() => {
+    setChatOpen(true);
+    return () => setChatOpen(false);
+  }, [setChatOpen]);
+
+  // Once visible, if there is already an active conversation, mark it as read once
+  useEffect(() => {
+    if (activeConversationId) {
+      markAsRead(activeConversationId);
+    }
+    // run when activeConversationId changes
+  }, [activeConversationId, markAsRead]);
 
   const handleSelectParticipant = async (participant: ChatParticipant) => {
     setSelectedParticipant(participant);
