@@ -11,6 +11,9 @@ export { ChatMessageList } from './ChatMessageList';
 export { ChatMessageInput } from './ChatMessageInput';
 export { ChatHeader } from './ChatHeader';
 export { ChatNewConversation } from './ChatNewConversation';
+export { default as ChatPanel } from './ChatPanel';
+export { ParticipantList } from './ParticipantList';
+export { ConversationView } from './ConversationView';
 
 // Re-export hooks for convenience
 export {

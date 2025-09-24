@@ -5,14 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { 
-  Send, 
-  Paperclip, 
-  Smile, 
-  X,
-  Edit2,
-  Reply
-} from 'lucide-react';
+import { Send, X, Edit2, Reply } from 'lucide-react';
 import { ChatMessage } from '@/types/chat-v2';
 import { useTypingIndicator } from '@/hooks/useChatV2';
 
@@ -151,18 +144,8 @@ export function ChatMessageInput({
       {/* Input area */}
       <div className="p-4">
         <div className="flex items-end gap-2">
-          {/* Attachment button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-9 w-9 p-0"
-            disabled={disabled}
-          >
-            <Paperclip className="h-5 w-5" />
-          </Button>
-
           {/* Message input */}
-          <div className="flex-1 relative">
+          <div className="flex-1">
             <Textarea
               ref={textareaRef}
               value={message}
@@ -176,22 +159,12 @@ export function ChatMessageInput({
               disabled={disabled || isSending}
               className={cn(
                 "min-h-[40px] max-h-[120px] resize-none",
-                "pr-10 py-2.5",
+                "py-2.5",
                 "placeholder:text-muted-foreground",
                 "focus-visible:ring-1"
               )}
               rows={1}
             />
-            
-            {/* Emoji button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute right-1 bottom-1 h-7 w-7 p-0"
-              disabled={disabled}
-            >
-              <Smile className="h-4 w-4" />
-            </Button>
           </div>
 
           {/* Send button */}

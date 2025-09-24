@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Search, Users, MessageCircle, Plus } from 'lucide-react';
+import { Search, MessageCircle, Plus } from 'lucide-react';
 import { ChatConversation, ChatParticipant } from '@/types/chat-v2';
 import { useChatConversations, useOnlineUsers } from '@/stores/chatStoreV2';
 import { formatDistanceToNow } from 'date-fns';
@@ -177,20 +177,6 @@ export function ChatConversationList({
           )}
         </div>
       </ScrollArea>
-
-      {/* Footer with stats */}
-      <div className="p-3 border-t">
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <Users className="h-3 w-3" />
-            {conversations.length} conversation{conversations.length > 1 ? 's' : ''}
-          </span>
-          <span className="flex items-center gap-1">
-            <div className="h-2 w-2 bg-green-500 rounded-full" />
-            {onlineUsers.size} en ligne
-          </span>
-        </div>
-      </div>
     </div>
   );
 }

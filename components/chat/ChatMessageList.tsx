@@ -52,12 +52,12 @@ export function ChatMessageList({
   const currentUserId = Number(session?.user?.id);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
-  const lastMessageRef = useRef<HTMLDivElement>(null);
+  const bottomAnchorRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom on new messages
+  // Auto-scroll to bottom (newest at bottom) on new messages
   useEffect(() => {
-    if (autoScroll && lastMessageRef.current) {
-      lastMessageRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (autoScroll && bottomAnchorRef.current) {
+      bottomAnchorRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, autoScroll]);
 
@@ -67,6 +67,7 @@ export function ChatMessageList({
     const isNearTop = element.scrollTop < 100;
     const isNearBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 100;
 
+    // For ascending order (newest at bottom), enable auto-scroll only when near bottom
     setAutoScroll(isNearBottom);
 
     if (isNearTop && hasMore && !isLoadingMore && onLoadMore) {
@@ -158,16 +159,16 @@ export function ChatMessageList({
                 )}
 
                 <div className={cn(
-                  "relative px-4 py-2 rounded-2xl",
+                  "relative px-4 py-2 rounded-2xl shadow-sm",
                   isOwn 
-                    ? "bg-primary text-primary-foreground rounded-br-sm" 
-                    : "bg-muted rounded-bl-sm"
+                    ? "bg-primary/90 text-primary-foreground rounded-br-sm dark:bg-primary/85"
+                    : "bg-muted rounded-bl-sm border border-border text-foreground dark:bg-muted/30"
                 )}>
                   {/* Reply reference */}
                   {message.replyTo && (
                     <div className={cn(
                       "mb-2 p-2 rounded-lg text-xs",
-                      isOwn ? "bg-primary-foreground/10" : "bg-background/50"
+                      isOwn ? "bg-primary-foreground/10 dark:bg-white/10" : "bg-background/50 dark:bg-white/[0.04]"
                     )}>
                       <p className="font-medium mb-0.5">{message.replyTo.senderName}</p>
                       <p className="opacity-75 line-clamp-2">{message.replyTo.content}</p>
@@ -175,7 +176,7 @@ export function ChatMessageList({
                   )}
 
                   {/* Message text */}
-                  <p className="text-sm whitespace-pre-wrap break-words">
+                  <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
                     {message.content}
                   </p>
 
@@ -186,7 +187,7 @@ export function ChatMessageList({
 
                   {/* Time and status */}
                   <div className="flex items-center gap-1 mt-1">
-                    <span className="text-xs opacity-60">
+                    <span className="text-xs text-muted-foreground">
                       {formatMessageTime(message.createdAt)}
                     </span>
                     {isOwn && getMessageStatusIcon(message.status, message.isRead)}
@@ -267,6 +268,7 @@ export function ChatMessageList({
       ref={scrollAreaRef}
       onScroll={handleScroll}
     >
+      {/* Load more indicator (at top) */}
       {/* Load more indicator */}
       {isLoadingMore && (
         <div className="text-center py-2 mb-4">
@@ -279,8 +281,8 @@ export function ChatMessageList({
         renderMessageGroup(messagesGroup, date)
       )}
 
-      {/* Auto-scroll anchor */}
-      <div ref={lastMessageRef} />
+      {/* Auto-scroll anchor at bottom (newest at bottom) */}
+      <div ref={bottomAnchorRef} />
     </ScrollArea>
   );
 }

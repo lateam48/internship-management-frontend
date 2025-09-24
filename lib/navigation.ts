@@ -71,12 +71,6 @@ export const navigationConfig: NavigationItem[] = [
         icon: Briefcase,
         roles: [UserRoles.STUDENT],
     },
-    {
-        title: "Messagerie",
-        href: "/dashboard/chat",
-        icon: MessageCircle,
-        roles: [UserRoles.STUDENT],
-      },
     // Company specific
     {
         title: "Mes Offres",
@@ -97,12 +91,6 @@ export const navigationConfig: NavigationItem[] = [
         roles: [UserRoles.COMPANY],
     },
 
-    {
-        title: "Messagerie",
-        href: "/dashboard/chat",
-        icon: MessageCircle,
-        roles: [UserRoles.COMPANY],
-      },
     {
         title: "Profil",
         href: "/dashboard/profile",

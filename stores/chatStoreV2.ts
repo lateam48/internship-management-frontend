@@ -3,6 +3,7 @@
  * This store is modular and can be easily integrated into any React/Next.js project
  */
 
+import { enableMapSet } from 'immer';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
@@ -16,9 +17,13 @@ import {
   TypingIndicator,
   ChatState,
   MessageStatus,
+  MessageType,
 } from '@/types/chat-v2';
 import { chatServiceV2 } from '@/services/chatServiceV2';
 import { getChatWebSocketService } from '@/lib/chat-websocket';
+
+// Enable Immer plugin to support Map/Set structures in state
+enableMapSet();
 
 interface ChatActions {
   // Initialization
@@ -89,7 +94,7 @@ export const useChatStoreV2 = create<ChatStore>()(
             // Compute correct WS base (must NOT include '/api')
             const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
             const wsBase = process.env.NEXT_PUBLIC_WS_URL || (typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}` : '');
-            const wsUrl = wsBase ? `${wsBase}/ws-chat` : '';
+            const wsUrl = process.env.NEXT_PUBLIC_WS_CHAT_URL || wsBase;
 
             // Initialize WebSocket (do not block REST init if it fails)
             try {
@@ -269,17 +274,25 @@ export const useChatStoreV2 = create<ChatStore>()(
           if (!otherParticipant) return;
 
           const response = await chatServiceV2.getConversationMessages(otherParticipant.id, page);
-          
+
           if (response.success && response.data) {
             set((state) => {
-              if (page === 0) {
-                state.messages[conversationId] = response.data!.content;
-              } else {
-                state.messages[conversationId] = [
-                  ...(state.messages[conversationId] || []),
-                  ...response.data!.content,
-                ];
+              const existing = state.messages[conversationId] || [];
+              const pageContent = response.data!.content || [];
+              const merged = page === 0 ? pageContent : [...existing, ...pageContent];
+
+              // Deduplicate by id
+              const map = new Map<number, ChatMessage>();
+              for (const m of merged) {
+                if (!map.has(m.id)) map.set(m.id, m);
               }
+
+              // Sort ascending by createdAt so newest is at the bottom
+              const sorted = Array.from(map.values()).sort(
+                (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+              );
+
+              state.messages[conversationId] = sorted;
               state.isLoading = false;
             });
           } else {
@@ -292,32 +305,98 @@ export const useChatStoreV2 = create<ChatStore>()(
 
         // Send message
         sendMessage: async (request: SendMessageRequest) => {
+          // Begin sending state
           set((state) => {
             state.isSending = true;
           });
 
+          // Create an optimistic message so the UI updates immediately
+          const tempId = -Date.now();
+          const nowIso = new Date().toISOString();
+          const stateSnapshot = get();
+          const conversation = stateSnapshot.conversations.find(c =>
+            c.participants.some(p => p.id === request.recipientId)
+          );
+          const conversationId = conversation?.id;
+
+          if (conversationId) {
+            const optimisticMessage: ChatMessage = {
+              id: tempId,
+              conversationId,
+              sender: {
+                id: stateSnapshot.currentUserId || 0,
+                username: '',
+                fullName: 'Moi',
+                role: '',
+              },
+              content: request.content,
+              type: MessageType.TEXT,
+              status: MessageStatus.SENDING,
+              createdAt: nowIso,
+              isEdited: false,
+              replyToId: request.replyToId,
+            };
+
+            set((state) => {
+              if (!state.messages[conversationId]) {
+                state.messages[conversationId] = [];
+              }
+              // Ascending order: append optimistic message at the end
+              state.messages[conversationId].push(optimisticMessage);
+              // Update conversation preview
+              const conv = state.conversations.find(c => c.id === conversationId);
+              if (conv) {
+                conv.lastMessagePreview = request.content;
+                conv.lastMessageAt = nowIso;
+              }
+            });
+          }
+
+          // Send via REST
           const response = await chatServiceV2.sendMessage(request);
-          
+
           if (response.success && response.data) {
-            // Message will be added via WebSocket
+            const serverMsg = response.data;
             set((state) => {
               state.isSending = false;
-            });
-
-            // Update conversation last message
-            set((state) => {
-              const conversation = state.conversations.find(
-                c => c.participants.some(p => p.id === request.recipientId)
-              );
-              if (conversation) {
-                conversation.lastMessagePreview = request.content;
-                conversation.lastMessageAt = new Date().toISOString();
+              if (conversationId) {
+                const arr = state.messages[conversationId] || [];
+                const idx = arr.findIndex(m => m.id === tempId);
+                if (idx !== -1) {
+                  arr[idx] = serverMsg;
+                  // Remove any duplicate of the same id that may have been added via WebSocket earlier
+                  const dupIndex = arr.findIndex((m, i) => m.id === serverMsg.id && i !== idx);
+                  if (dupIndex !== -1) {
+                    arr.splice(dupIndex, 1);
+                  }
+                } else {
+                  // If optimistic message not found (e.g., list reloaded), ensure message exists
+                  // Avoid duplicates: add only if not already present
+                  const exists = arr.find(m => m.id === serverMsg.id);
+                  if (!exists) arr.push(serverMsg);
+                }
+                // Update conversation preview from server values
+                const conv = state.conversations.find(c => c.id === conversationId);
+                if (conv) {
+                  conv.lastMessagePreview = serverMsg.content;
+                  conv.lastMessageAt = serverMsg.createdAt;
+                  conv.lastMessageSender = serverMsg.sender;
+                }
               }
             });
           } else {
             set((state) => {
-              state.error = response.error || 'Failed to send message';
               state.isSending = false;
+              state.error = response.error || 'Failed to send message';
+              if (conversationId) {
+                const arr = state.messages[conversationId];
+                if (arr) {
+                  const idx = arr.findIndex(m => m.id === tempId);
+                  if (idx !== -1) {
+                    arr[idx].status = MessageStatus.FAILED;
+                  }
+                }
+              }
             });
           }
         },
@@ -372,7 +451,8 @@ export const useChatStoreV2 = create<ChatStore>()(
             // Check if message already exists
             const exists = state.messages[message.conversationId].find(m => m.id === message.id);
             if (!exists) {
-              state.messages[message.conversationId].unshift(message);
+              // Ascending order: append new incoming message at the end
+              state.messages[message.conversationId].push(message);
             }
 
             // Update conversation

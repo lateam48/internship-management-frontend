@@ -1,7 +1,3 @@
-/**
- * Chat Service V2 - REST API client
- * This service handles all HTTP requests for the chat module
- */
 
 import { apiClient } from '@/lib/axios';
 import {
@@ -16,10 +12,6 @@ import {
 
 const BASE_URL = '/chat/v2';
 
-/**
- * Chat Service class
- * Handles all REST API interactions for the chat module
- */
 class ChatServiceV2 {
   private mapParticipant(raw: any): ChatParticipant {
     const role = (raw?.role ?? '').toString().toUpperCase();
@@ -39,9 +31,6 @@ class ChatServiceV2 {
       lastSeen: raw?.lastSeen ?? undefined,
     } as ChatParticipant;
   }
-  /**
-   * Send a new message
-   */
   async sendMessage(request: SendMessageRequest): Promise<ChatApiResponse<ChatMessage>> {
     try {
       const response = await apiClient.post<ChatMessage>(`${BASE_URL}/messages`, request);
@@ -58,9 +47,6 @@ class ChatServiceV2 {
     }
   }
 
-  /**
-   * Get user conversations
-   */
   async getConversations(
     page = 0,
     size = 20
@@ -85,9 +71,6 @@ class ChatServiceV2 {
     }
   }
 
-  /**
-   * Get messages from a conversation
-   */
   async getConversationMessages(
     userId: number,
     page = 0,
@@ -113,9 +96,6 @@ class ChatServiceV2 {
     }
   }
 
-  /**
-   * Update a message
-   */
   async updateMessage(
     messageId: number,
     request: UpdateMessageRequest
@@ -138,9 +118,6 @@ class ChatServiceV2 {
     }
   }
 
-  /**
-   * Delete a message
-   */
   async deleteMessage(messageId: number): Promise<ChatApiResponse<void>> {
     try {
       await apiClient.delete(`${BASE_URL}/messages/${messageId}`);
@@ -156,9 +133,6 @@ class ChatServiceV2 {
     }
   }
 
-  /**
-   * Mark conversation as read
-   */
   async markConversationAsRead(conversationId: number): Promise<ChatApiResponse<void>> {
     try {
       await apiClient.put(`${BASE_URL}/conversations/${conversationId}/read`);
@@ -174,9 +148,6 @@ class ChatServiceV2 {
     }
   }
 
-  /**
-   * Get unread message count
-   */
   async getUnreadCount(): Promise<ChatApiResponse<number>> {
     try {
       const response = await apiClient.get<{ unreadCount: number }>(
@@ -196,9 +167,6 @@ class ChatServiceV2 {
     }
   }
 
-  /**
-   * Get eligible participants
-   */
   async getEligibleParticipants(): Promise<ChatApiResponse<ChatParticipant[]>> {
     try {
       const response = await apiClient.get<any[]>(`${BASE_URL}/participants`);
@@ -220,9 +188,6 @@ class ChatServiceV2 {
     }
   }
 
-  /**
-   * Get or create conversation with a user
-   */
   async getOrCreateConversation(userId: number): Promise<ChatApiResponse<ChatConversation>> {
     try {
       const response = await apiClient.post<ChatConversation>(
@@ -241,9 +206,6 @@ class ChatServiceV2 {
     }
   }
 
-  /**
-   * Search messages
-   */
   async searchMessages(
     query: string,
     page = 0,
@@ -270,8 +232,6 @@ class ChatServiceV2 {
   }
 }
 
-// Export singleton instance
 export const chatServiceV2 = new ChatServiceV2();
 
-// Export class for testing or custom instances
 export default ChatServiceV2;

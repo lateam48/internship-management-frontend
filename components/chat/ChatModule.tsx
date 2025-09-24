@@ -149,7 +149,7 @@ export function ChatModule({
   // Render empty state
   if (!isLoading && conversations.length === 0 && !compactMode) {
     return (
-      <Card className={cn("flex items-center justify-center h-[600px]", className)}>
+      <Card className={cn("flex items-center justify-center h-[80vh]", className)}>
         <EmptyState
           icon={MessageCircle}
           title="Aucune conversation"
@@ -171,7 +171,7 @@ export function ChatModule({
   // Loading state
   if (isLoading && conversations.length === 0) {
     return (
-      <Card className={cn("flex items-center justify-center h-[600px]", className)}>
+      <Card className={cn("flex items-center justify-center h-[80vh]", className)}>
         <LoadingContent loadingText="Chargement des conversations..." />
       </Card>
     );
@@ -180,8 +180,8 @@ export function ChatModule({
   return (
     <>
       <Card className={cn(
-        "flex h-[600px] overflow-hidden",
-        compactMode && "h-[500px]",
+        "flex h-[80vh] overflow-hidden",
+        compactMode && "h-[65vh]",
         className
       )}>
         {/* Desktop layout */}
@@ -191,7 +191,7 @@ export function ChatModule({
             activeConversationId={store.activeConversationId}
             onSelectConversation={handleSelectConversation}
             onNewConversation={() => setShowNewConversation(true)}
-            className="w-80 flex-shrink-0"
+            className="w-72 flex-shrink-0"
           />
 
           {/* Conversation area */}

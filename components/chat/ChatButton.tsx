@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { MessageCircle } from 'lucide-react';
-import { ChatModule } from './ChatModule';
+import ChatPanel from './ChatPanel';
 import { useTotalUnreadCount } from '@/hooks/useChatV2';
 
 interface ChatButtonProps {
@@ -87,8 +87,8 @@ export function ChatButton({
             )}
           </SheetTitle>
         </SheetHeader>
-        <div className="h-[calc(100vh-80px)]">
-          <ChatModule className="h-full border-0 rounded-none shadow-none" />
+        <div className="h-[calc(100vh-80px)] sm:h-[calc(100vh-80px)]">
+          <ChatPanel className="h-full" />
         </div>
       </SheetContent>
     </Sheet>

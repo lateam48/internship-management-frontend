@@ -24,7 +24,6 @@ export function Navbar({ session }: Readonly<NavbarProps>) {
   const userRole = session?.user?.role;
   const userId = userIdStr ? parseInt(userIdStr, 10) : undefined;
 
-  // Show chat button only for STUDENT and COMPANY roles
   const showChatButton = userRole === 'STUDENT' || userRole === 'COMPANY';
 
   const { notificationByStatus, refetchNotifications } = useNotifications({
@@ -61,12 +60,10 @@ export function Navbar({ session }: Readonly<NavbarProps>) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {/* Chat button for students and companies */}
             {showChatButton && (
               <ChatButton variant="icon" size="md" />
             )}
 
-            {/* Notifications button */}
             <Button
               variant="ghost"
               size="icon"
