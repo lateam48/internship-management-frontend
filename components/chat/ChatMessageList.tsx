@@ -29,14 +29,14 @@ import { format, isToday, isYesterday } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 interface ChatMessageListProps {
-  messages: ChatMessage[];
-  onEditMessage: (message: ChatMessage) => void;
-  onDeleteMessage: (messageId: number) => void;
-  onReplyMessage: (message: ChatMessage) => void;
-  onLoadMore?: () => void;
-  hasMore?: boolean;
-  isLoadingMore?: boolean;
-  className?: string;
+  readonly messages: ChatMessage[];
+  readonly onEditMessage: (message: ChatMessage) => void;
+  readonly onDeleteMessage: (messageId: number) => void;
+  readonly onReplyMessage: (message: ChatMessage) => void;
+  readonly onLoadMore?: () => void;
+  readonly hasMore?: boolean;
+  readonly isLoadingMore?: boolean;
+  readonly className?: string;
 }
 
 export function ChatMessageList({
@@ -88,16 +88,16 @@ export function ChatMessageList({
     }
   };
 
-  const getMessageStatusIcon = (status: MessageStatus, isRead?: boolean) => {
+  const getMessageStatusIcon = (status: MessageStatus) => {
     switch (status) {
       case 'SENDING':
-        return <Clock className="h-3 w-3 text-muted-foreground" />;
+        return <Clock className="h-3 w-3 text-white/70" />;
       case 'SENT':
-        return <Check className="h-3 w-3 text-muted-foreground" />;
+        return <Check className="h-3 w-3 text-white/70" />;
       case 'DELIVERED':
-        return <CheckCheck className="h-3 w-3 text-muted-foreground" />;
+        return <CheckCheck className="h-3 w-3 text-white/80" />;
       case 'READ':
-        return <CheckCheck className="h-3 w-3 text-primary" />;
+        return <CheckCheck className="h-3 w-3 text-white" />;
       case 'FAILED':
         return <AlertCircle className="h-3 w-3 text-destructive" />;
       default:
@@ -162,7 +162,7 @@ export function ChatMessageList({
                 <div className={cn(
                   "relative px-4 py-2 rounded-2xl shadow-sm",
                   isOwn 
-                    ? "bg-primary/90 text-primary-foreground rounded-br-sm dark:bg-primary/85"
+                    ? "bg-primary/90 text-white rounded-br-sm dark:bg-primary/85"
                     : "bg-muted rounded-bl-sm border border-border text-foreground dark:bg-muted/30"
                 )}>
                   {/* Reply reference */}
@@ -188,10 +188,10 @@ export function ChatMessageList({
 
                   {/* Time and status */}
                   <div className="flex items-center gap-1 mt-1">
-                    <span className="text-xs text-muted-foreground">
+                    <span className={cn("text-xs", isOwn ? "text-white/80" : "text-muted-foreground") }>
                       {formatMessageTime(message.createdAt)}
                     </span>
-                    {isOwn && getMessageStatusIcon(message.status, message.isRead)}
+                    {isOwn && getMessageStatusIcon(message.status)}
                   </div>
 
                   {/* Message actions */}
