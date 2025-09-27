@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -13,6 +13,7 @@ import { toast } from "sonner"
 import type { User, UserRole } from "@/types"
 import type { CreateUserMutation, UpdateUserMutation, DeleteUserMutation } from "@/types/user"
 import { SubmitButton } from "@/components/global"
+import { Eye, EyeOff } from "lucide-react"
 
 const userFormSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -33,6 +34,7 @@ interface AdminUsersCreateDialogProps {
 }
 
 export function AdminUsersCreateDialog({ isOpen, onClose, createUserMutation, sectors }: AdminUsersCreateDialogProps) {
+  const [showPassword, setShowPassword] = useState(false)
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
@@ -98,7 +100,19 @@ export function AdminUsersCreateDialog({ isOpen, onClose, createUserMutation, se
           </div>
           <div className="space-y-1">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" {...form.register("password")}/>
+            <div className="relative">
+              <Input id="password" type={showPassword ? "text" : "password"} {...form.register("password")} />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
+            </div>
             {form.formState.errors.password && (
               <p className="text-destructive text-xs mt-1">{form.formState.errors.password.message}</p>
             )}
@@ -162,6 +176,7 @@ interface AdminUsersEditDialogProps {
 }
 
 export function AdminUsersEditDialog({ isOpen, onClose, user, updateUserMutation, sectors }: AdminUsersEditDialogProps) {
+  const [showPassword, setShowPassword] = useState(false)
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
@@ -249,7 +264,19 @@ export function AdminUsersEditDialog({ isOpen, onClose, user, updateUserMutation
           </div>
           <div className="space-y-1">
             <Label htmlFor="edit-password">Password</Label>
-            <Input id="edit-password" type="password" {...form.register("password")}/>
+            <div className="relative">
+              <Input id="edit-password" type={showPassword ? "text" : "password"} {...form.register("password")} />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
+            </div>
             {form.formState.errors.password && (
               <p className="text-destructive text-xs mt-1">{form.formState.errors.password.message}</p>
             )}

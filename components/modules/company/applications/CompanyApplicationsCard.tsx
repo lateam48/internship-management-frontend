@@ -25,6 +25,7 @@ export function CompanyApplicationsCard({
 }: Readonly<CompanyApplicationsCardProps>) {
   const { updateApplicationStatus, downloadApplicationBundle } = useApplication()
   const [processingApplicationId, setProcessingApplicationId] = useState<number | null>(null)
+  const [processingAction, setProcessingAction] = useState<"ACCEPTED" | "REJECTED" | null>(null)
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -67,11 +68,15 @@ export function CompanyApplicationsCard({
 
   const handleUpdateStatus = (applicationId: number, status: string) => {
     setProcessingApplicationId(applicationId)
+    if (status === "ACCEPTED" || status === "REJECTED") {
+      setProcessingAction(status)
+    }
     updateApplicationStatus.mutate(
       { id: applicationId, status },
       {
         onSettled: () => {
           setProcessingApplicationId(null)
+          setProcessingAction(null)
         },
       }
     )
@@ -82,6 +87,8 @@ export function CompanyApplicationsCard({
   }
 
   const isProcessing = processingApplicationId === application.id
+  const isAccepting = isProcessing && processingAction === "ACCEPTED"
+  const isRejecting = isProcessing && processingAction === "REJECTED"
 
   return (
     <Card className={`border-l-4 ${getBorderColor()}`}>
@@ -115,13 +122,14 @@ export function CompanyApplicationsCard({
             <div className="flex space-x-2">
               <SubmitButton
                 size="sm"
-                loading={isProcessing}
+                loading={isAccepting}
                 label="Accepter"
                 onClick={() => handleUpdateStatus(application.id, "ACCEPTED")}
                 className="flex-1"
                 btnType="button"
+                disabled={isProcessing}
               >
-                {isProcessing ? (
+                {isAccepting ? (
                   <Loader2 className="h-4 w-4 mr-1 animate-spin" />
                 ) : (
                   <CheckCircle className="h-4 w-4 mr-1" />
@@ -130,14 +138,15 @@ export function CompanyApplicationsCard({
               </SubmitButton>
               <SubmitButton
                 size="sm"
-                loading={isProcessing}
+                loading={isRejecting}
                 label="Rejeter"
                 onClick={() => handleUpdateStatus(application.id, "REJECTED")}
                 className="flex-1"
                 btnType="button"
                 variant="outline"
+                disabled={isProcessing}
               >
-                {isProcessing ? (
+                {isRejecting ? (
                   <Loader2 className="h-4 w-4 mr-1 animate-spin" />
                 ) : (
                   <XCircle className="h-4 w-4 mr-1" />

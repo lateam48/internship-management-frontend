@@ -89,25 +89,42 @@ export function CompanyOfferDetailsApplications({
                 {application.status === "PENDING" && (
                   <div className="flex-col gap-1">
                     <div className="flex space-x-2 mt-3">
-                      <Button
-                        size="sm"
-                        onClick={() => onUpdateStatus(application.id, "ACCEPTED")}
-                        disabled={updateStatusMutation.isPending}
-                        className="flex-1"
-                      >
-                        <CheckCircle className="h-4 w-4 mr-1" />
-                        Accepter
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => onUpdateStatus(application.id, "REJECTED")}
-                        disabled={updateStatusMutation.isPending}
-                        className="flex-1"
-                      >
-                        <XCircle className="h-4 w-4 mr-1" />
-                        Rejeter
-                      </Button>
+                      {(() => {
+                        const isUpdating = updateStatusMutation.isPending && updateStatusMutation.variables?.id === application.id
+                        const isApproving = isUpdating && updateStatusMutation.variables?.status === "ACCEPTED"
+                        const isRejecting = isUpdating && updateStatusMutation.variables?.status === "REJECTED"
+                        return (
+                          <>
+                            <Button
+                              size="sm"
+                              onClick={() => onUpdateStatus(application.id, "ACCEPTED")}
+                              disabled={isApproving}
+                              className="flex-1"
+                            >
+                              {isApproving ? (
+                                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                              ) : (
+                                <CheckCircle className="h-4 w-4 mr-1" />
+                              )}
+                              Accepter
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => onUpdateStatus(application.id, "REJECTED")}
+                              disabled={isRejecting}
+                              className="flex-1"
+                            >
+                              {isRejecting ? (
+                                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                              ) : (
+                                <XCircle className="h-4 w-4 mr-1" />
+                              )}
+                              Rejeter
+                            </Button>
+                          </>
+                        )
+                      })()}
                     </div>
                     <div>
                       <Button

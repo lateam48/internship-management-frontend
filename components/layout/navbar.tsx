@@ -12,6 +12,7 @@ import { ModeToggle, Logo } from "@/components/global";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useWebSocket } from "@/contexts/WebSocketContext";
 import { useState, useEffect } from "react";
+import { ChatButton } from "@/components/chat";
 
 interface NavbarProps {
   session: AuthSession;
@@ -19,22 +20,22 @@ interface NavbarProps {
 
 export function Navbar({ session }: Readonly<NavbarProps>) {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const userId = session?.user?.id;
+  const userIdStr = session?.user?.id;
+  const userRole = session?.user?.role;
+  const userId = userIdStr ? parseInt(userIdStr, 10) : undefined;
+
+  const showChatButton = userRole === 'STUDENT' || userRole === 'COMPANY';
 
   const { notificationByStatus, refetchNotifications } = useNotifications({
-    userId: parseInt(userId as string),
+    userId,
     status: "UNREAD",
   });
 
-  const {
-    connectWebSocket,
-    registerRefreshCallback,
-    unregisterRefreshCallback,
-  } = useWebSocket();
+  const { connectWebSocket, registerRefreshCallback, unregisterRefreshCallback } = useWebSocket();
 
   useEffect(() => {
-    if (userId) {
-      connectWebSocket(userId.toString());
+    if (userIdStr) {
+      connectWebSocket(userIdStr);
       registerRefreshCallback(() => {
         refetchNotifications();
       });
@@ -42,13 +43,7 @@ export function Navbar({ session }: Readonly<NavbarProps>) {
     return () => {
       unregisterRefreshCallback();
     };
-  }, [
-    userId,
-    connectWebSocket,
-    registerRefreshCallback,
-    unregisterRefreshCallback,
-    refetchNotifications,
-  ]);
+  }, [userIdStr, connectWebSocket, registerRefreshCallback, unregisterRefreshCallback, refetchNotifications]);
 
   const unreadCount = notificationByStatus.data?.length || 0;
 
@@ -61,14 +56,14 @@ export function Navbar({ session }: Readonly<NavbarProps>) {
           <div className="flex-1 max-w-md">
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Rechercher..."
-                className="pl-8"
-              />
+              <Input type="search" placeholder="Rechercher..." className="pl-8" />
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {showChatButton && (
+              <ChatButton variant="icon" size="md" />
+            )}
+
             <Button
               variant="ghost"
               size="icon"
@@ -81,7 +76,7 @@ export function Navbar({ session }: Readonly<NavbarProps>) {
                   variant="destructive"
                   className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
                 >
-                  {unreadCount > 99 ? "99+" : unreadCount}
+                  {unreadCount > 99 ? '99+' : unreadCount}
                 </Badge>
               )}
               <span className="sr-only">Notifications</span>
@@ -96,7 +91,7 @@ export function Navbar({ session }: Readonly<NavbarProps>) {
         <NotificationsModal
           open={notificationsOpen}
           onOpenChange={setNotificationsOpen}
-          userId={parseInt(userId)}
+          userId={userId}
         />
       )}
     </>

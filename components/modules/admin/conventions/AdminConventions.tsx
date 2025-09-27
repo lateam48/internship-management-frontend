@@ -9,6 +9,7 @@ export function AdminConventions() {
   const [searchQuery, setSearchQuery] = useState("")
   const [approvingId, setApprovingId] = useState<number | null>(null)
   const [rejectingId, setRejectingId] = useState<number | null>(null)
+  const [downloadingId, setDownloadingId] = useState<number | null>(null)
 
   const { data: conventions, isLoading } = useAllConventions()
   const approveMutation = useApproveConventionByAdmin()
@@ -49,7 +50,10 @@ export function AdminConventions() {
   }
 
   const handleDownloadPdf = (conventionId: number) => {
-    downloadPdfMutation.mutate(conventionId)
+    setDownloadingId(conventionId)
+    downloadPdfMutation.mutate(conventionId, {
+      onSettled: () => setDownloadingId(null),
+    })
   }
 
   return (
@@ -65,8 +69,9 @@ export function AdminConventions() {
         onDownloadPdf={handleDownloadPdf}
         isApproving={(id) => approvingId === id && approveMutation.isPending}
         isRejecting={(id) => rejectingId === id && rejectMutation.isPending}
-        isDownloading={downloadPdfMutation.isPending}
+        isDownloading={(id) => downloadingId === id && downloadPdfMutation.isPending}
       />
+
     </div>
   )
 }
