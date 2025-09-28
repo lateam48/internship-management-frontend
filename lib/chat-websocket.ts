@@ -198,7 +198,7 @@ export class ChatWebSocketService {
   /**
    * Send a message via WebSocket
    */
-  send(destination: string, body: any): void {
+  send(destination: string, body: unknown): void {
     if (!this.client?.active) {
       console.error('WebSocket is not connected');
       return;

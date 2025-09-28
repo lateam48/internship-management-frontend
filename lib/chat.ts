@@ -15,26 +15,25 @@ export const roleLabels: Record<ChatRole, string> = {
 export type ChatWebSocketEvent =
   | { type: 'message'; data: unknown }
   | { type: 'reaction'; data: unknown }
-  | { type: 'typing'; data: unknown }
   | { type: 'read'; data: unknown }
   | { type: 'online_status'; data: unknown };
 
 type Listener = (event: ChatWebSocketEvent) => void;
 
-class ChatWebSocketService {
-  private ws: WebSocket | null = null;
-  private listeners: Listener[] = [];
-  private url: string;
-  private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
-  private isConnected = false;
+  class ChatWebSocketService {
+    private ws: WebSocket | null = null;
+    private listeners: Listener[] = [];
+    private readonly url: string;
+    private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
+    private isConnected = false;
 
-  constructor(url: string) {
-    this.url = url;
-  }
+    constructor(url: string) {
+      this.url = url;
+    }
 
-  connect(token: string) {
+  connect(_token: string) {
     if (this.ws) this.disconnect();
-    this.ws = new WebSocket(`${this.url}?token=${encodeURIComponent(token)}`);
+    this.ws = new WebSocket(`${this.url}?token=${encodeURIComponent(_token)}`);
     this.ws.onopen = () => {
       this.isConnected = true;
     };
@@ -86,41 +85,43 @@ class ChatWebSocketService {
   }
 }
 
-
 // Chat disabled: instantiate but do not actually connect
 export const chatWebSocketService = new ChatWebSocketService(
   ""
 );
 
-type StompMessageListener = (msg: unknown) => void;
+  type StompMessageListener = (msg: unknown) => void;
 
-class StompChatService {
-  private client: Client | null = null;
-  private messageListeners: StompMessageListener[] = [];
-  private connected = false;
+  class StompChatService {
+    private client: Client | null = null;
+    private messageListeners: StompMessageListener[] = [];
+    private connected = false;
 
-  connect(token: string) {
-    // Chat disabled: do not establish any connection
-    this.connected = false;
-    this.client = null;
+    connect(_token: string) {
+      // Chat disabled: do not establish any connection
+      void _token;
+      this.connected = false;
+      this.client = null;
+    }
+
+    disconnect() {
+      // Chat disabled: ensure no client
+      this.client = null;
+      this.connected = false;
+    }
+
+    onMessage(cb: StompMessageListener) {
+      this.messageListeners.push(cb);
+      return () => {
+        this.messageListeners = this.messageListeners.filter((l) => l !== cb);
+      };
+    }
+
+    sendMessage(_destination: string, _body: unknown) {
+      // Chat disabled: no-op
+      void _destination;
+      void _body;
+    }
   }
-
-  disconnect() {
-    // Chat disabled: ensure no client
-    this.client = null;
-    this.connected = false;
-  }
-
-  onMessage(cb: StompMessageListener) {
-    this.messageListeners.push(cb);
-    return () => {
-      this.messageListeners = this.messageListeners.filter((l) => l !== cb);
-    };
-  }
-
-  sendMessage(destination: string, body: unknown) {
-    // Chat disabled: no-op
-  }
-}
 
 export const stompChatService = new StompChatService();

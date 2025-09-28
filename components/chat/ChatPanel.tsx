@@ -44,6 +44,7 @@ const ChatPanel = ({ className }: ChatPanelProps) => {
       setView('conversation');
     } catch (e) {
       setView('participants');
+      console.error(e);
     } finally {
       setIsLoadingConv(false);
     }

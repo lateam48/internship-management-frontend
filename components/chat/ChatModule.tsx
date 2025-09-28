@@ -15,10 +15,9 @@ import {
   useChat,
   useActiveConversation,
   useTypingUsers,
-  useConversation
 } from '@/hooks/useChatV2';
 import { useChatStoreV2 } from '@/stores/chatStoreV2';
-import { ChatParticipant, SendMessageRequest, UpdateMessageRequest, ChatMessage, TypingIndicator } from '@/types/chat-v2';
+import { ChatParticipant, SendMessageRequest, ChatMessage, TypingIndicator } from '@/types/chat-v2';
 import { useToast } from '@/hooks/use-toast';
 
 interface ChatModuleProps {
@@ -38,7 +37,6 @@ export function ChatModule({
     conversations,
     messages,
     isLoading,
-    isSending,
     error,
     sendMessage,
     updateMessage,
@@ -78,6 +76,7 @@ export function ChatModule({
         description: "Impossible de créer la conversation",
         variant: "destructive",
       });
+      console.error(err);
     }
   };
 
@@ -126,6 +125,7 @@ export function ChatModule({
         description: "Impossible de supprimer le message",
         variant: "destructive",
       });
+      console.error(err);
     }
   };
 

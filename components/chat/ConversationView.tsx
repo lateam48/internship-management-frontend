@@ -16,12 +16,10 @@ interface ConversationViewProps {
   onBack?: () => void;
 }
 
-export function ConversationView({ participant, className, onBack }: ConversationViewProps) {
-  const store = useChatStoreV2();
+export function ConversationView({ participant, className, onBack }: Readonly<ConversationViewProps>) {
   const currentUserId = useChatStoreV2((s) => s.currentUserId);
   const {
     activeConversation,
-    messages,
     isLoading,
     sendMessage,
     updateMessage,

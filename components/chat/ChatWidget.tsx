@@ -3,11 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { MessageCircle, X, Minimize2, Maximize2 } from 'lucide-react';
 import { ChatModule } from './ChatModule';
