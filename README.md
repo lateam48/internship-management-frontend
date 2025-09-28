@@ -1,12 +1,9 @@
 # 🎓 Internship Management System
 
-
 ## 🎯 Objectif
 Le système de gestion de stages est une plateforme web complète destinée à faciliter la gestion des stages étudiants. Il permet aux étudiants de postuler à des offres, aux entreprises de publier des offres et gérer les candidatures, aux enseignants de valider les conventions, et aux administrateurs de superviser l'ensemble du processus.
 
-
 ## 🏗️ Principes clés
-
 
 ### Architecture multi-rôles
 - **Séparation des responsabilités** : chaque rôle a des permissions et interfaces spécifiques
@@ -14,25 +11,20 @@ Le système de gestion de stages est une plateforme web complète destinée à f
 - **Authentification centralisée** : système JWT avec NextAuth.js
 - **Interface adaptative** : composants dynamiques selon le rôle utilisateur
 
-
 ### Rôles système
 - **STUDENT** : consultation d'offres, candidatures, suivi des conventions
 - **COMPANY** : publication d'offres, gestion des candidatures, conventions
 - **TEACHER** : validation des conventions de stage
 - **ADMIN** : supervision complète, gestion des utilisateurs et secteurs
 
-
 ### Flux de validation
 1. **Candidature** : étudiant → entreprise → décision
 2. **Convention** : entreprise/étudiant → enseignant → validation
 3. **Notifications** : alertes automatiques à chaque étape
 
-
 ## 📊 Modèle de données
 
-
 ### Entités principales
-
 
 #### Users
 ```typescript
@@ -46,7 +38,6 @@ interface User {
   sector?: Sector
 }
 ```
-
 
 #### Offers (Offres de stage)
 ```typescript
@@ -66,7 +57,6 @@ interface InternshipOffer {
 }
 ```
 
-
 #### Applications (Candidatures)
 ```typescript
 interface Application {
@@ -79,7 +69,6 @@ interface Application {
   resume?: string
 }
 ```
-
 
 #### Conventions
 ```typescript
@@ -96,7 +85,6 @@ interface Convention {
 }
 ```
 
-
 #### Sectors (Secteurs d'activité)
 ```typescript
 interface Sector {
@@ -105,16 +93,12 @@ interface Sector {
   description?: string
 }
 ```
-
-
 ## 💻 Interfaces utilisateur
-
 
 ### Dashboard étudiant
 - **Offres de stage** : recherche, filtrage, candidature
 - **Mes candidatures** : suivi du statut, historique
 - **Profil** : gestion des informations personnelles
-
 
 ### Dashboard entreprise
 - **Mes offres** : création, modification, gestion
@@ -122,11 +106,9 @@ interface Sector {
 - **Conventions** : suivi et gestion
 - **Profil entreprise** : informations société
 
-
 ### Dashboard enseignant
 - **Validation conventions** : approbation/rejet avec commentaires
 - **Profil** : informations personnelles
-
 
 ### Dashboard administrateur
 - **Utilisateurs** : création, modification, suppression
@@ -135,9 +117,7 @@ interface Sector {
 - **Conventions** : vue d'ensemble et statistiques
 - **Profil** : gestion compte admin
 
-
 ## 🧾 Règles de gestion
-
 
 ### Candidatures
 - Un étudiant peut postuler à plusieurs offres
@@ -145,13 +125,11 @@ interface Sector {
 - Statuts : PENDING → ACCEPTED/REJECTED
 - Notifications automatiques aux parties concernées
 
-
 ### Conventions
 - Générées automatiquement après acceptation candidature
 - Validation obligatoire par un enseignant
 - Statuts : DRAFT → PENDING → VALIDATED/REJECTED
 - Dates cohérentes avec l'offre de stage
-
 
 ### Notifications
 - Système de notifications en temps réel
@@ -159,12 +137,9 @@ interface Sector {
 - Types : NEW_OFFER, NEW_APPLICATION, CONVENTION_VALIDATION, etc.
 - Rappels automatiques pour actions en attente
 
-
 ## 🔑 Permissions
 
-
 ### Permissions par rôle
-
 
 #### STUDENT
 - `VIEW` offres publiques
@@ -172,19 +147,16 @@ interface Sector {
 - `VIEW` ses candidatures et conventions
 - `EDIT` son profil
 
-
 #### COMPANY
 - `CREATE`, `EDIT`, `DELETE` ses offres
 - `VIEW`, `MANAGE` candidatures sur ses offres
 - `VIEW`, `EDIT` ses conventions
 - `EDIT` profil entreprise
 
-
 #### TEACHER
 - `VIEW` conventions à valider
 - `VALIDATE`, `REJECT` conventions
 - `EDIT` son profil
-
 
 #### ADMIN
 - `FULL_ACCESS` à toutes les fonctionnalités
@@ -192,9 +164,7 @@ interface Sector {
 - `VIEW` statistiques globales
 - `MODERATE` contenu
 
-
 ## 🛠️ Architecture technique
-
 
 ### Stack technologique
 - **Frontend** : Next.js 15, React 19, TypeScript
@@ -203,7 +173,6 @@ interface Sector {
 - **State Management** : TanStack Query, Zustand
 - **Forms** : React Hook Form + Zod validation
 - **API** : REST API externe
-
 
 ### Structure du projet
 ```
@@ -226,16 +195,13 @@ services/                 # Services API
 types/                    # Types TypeScript
 ```
 
-
 ### Routing et sécurité
 - **App Router** Next.js avec slots parallèles
 - **Middleware** d'authentification
 - **Protection des routes** par rôle
 - **Validation côté serveur** avec Zod
 
-
 ## 📌 User Stories
-
 
 ### Étudiant
 - ✅ Consulter les offres de stage disponibles
@@ -243,7 +209,6 @@ types/                    # Types TypeScript
 - ✅ Postuler à une offre avec CV et lettre de motivation
 - ✅ Suivre le statut de mes candidatures
 - ✅ Gérer mon profil étudiant
-
 
 ### Entreprise
 - ✅ Créer et publier des offres de stage
@@ -253,13 +218,11 @@ types/                    # Types TypeScript
 - ✅ Gérer les conventions de stage
 - ✅ Mettre à jour le profil entreprise
 
-
 ### Enseignant
 - ✅ Consulter les conventions à valider
 - ✅ Valider ou rejeter une convention
 - ✅ Ajouter des commentaires de validation
 - ✅ Gérer mon profil enseignant
-
 
 ### Administrateur
 - ✅ Gérer les utilisateurs (CRUD)
@@ -271,15 +234,12 @@ types/                    # Types TypeScript
 
 ## 🚀 Installation et déploiement
 
-
 ### Prérequis
 - Node.js 18+
 - npm ou pnpm
 - Accès à l'API backend
 
-
 ### Installation
-
 
 1. **Cloner le projet**
    ```bash
@@ -287,14 +247,12 @@ types/                    # Types TypeScript
    cd internship-management-frontend
    ```
 
-
 2. **Installer les dépendances**
    ```bash
    pnpm install
    # ou
    npm install
    ```
-
 
 3. **Configuration environnement**
    ```bash
@@ -309,9 +267,7 @@ types/                    # Types TypeScript
    NEXT_PUBLIC_API_URL="https://internship-service-3sfp.onrender.com/api/v1"
    ```
 
-
 4. **Lancer le serveur de développement**
-
 
    ```bash
    pnpm dev
@@ -319,10 +275,8 @@ types/                    # Types TypeScript
    npm run dev
    ```
 
-
 5. **Accéder à l'application**
    Ouvrir [http://localhost:3000](http://localhost:3000)
-
 
 ### Scripts disponibles
 ```bash
@@ -332,9 +286,7 @@ pnpm start    # Serveur de production
 pnpm lint     # Linting du code
 ```
 
-
 ## 📈 Statut du projet
-
 
 ### ✅ Fonctionnalités implémentées
 - Authentification multi-rôles
@@ -345,13 +297,11 @@ pnpm lint     # Linting du code
 - Interface responsive
 - Notifications en temps réel
 
-
 ### 🚧 En développement
 - Système de rappels automatiques
 - Statistiques avancées
-- Export de données
 - API de notifications email
-
+- Export de données
 
 ### 📋 Roadmap
 - Module de reporting
@@ -359,20 +309,7 @@ pnpm lint     # Linting du code
 - Système de notation
 - Application mobile
 
-
----
-
-
 **Version** : 0.1.0  
 **Dernière mise à jour** : 2025  
 **Licence** : Voir fichier LICENSE
-**Équipe** : Team 48  | Jake Melvin TIOKOU  - Belvinard POUADJEU - YOUMSSI TOGUEM Jean Vincent - Hassan Mahamat DOGO - Loïc Luc KENMOE MBEUKEM
-
-
-
-
-
-
-
-
-
+**Équipe** : 48 étudiants  
