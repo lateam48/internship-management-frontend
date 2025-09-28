@@ -36,7 +36,6 @@ export function AdminSectorsDialogs({
   setSectorToDeleteId: (id: number | null) => void,
   deleteSector: DeleteSectorMutation
 }) {
-  // Create
   const handleCreateSector = () => {
     if (newSectorName.trim()) {
       createSector.mutate(
@@ -50,7 +49,6 @@ export function AdminSectorsDialogs({
       )
     }
   }
-  // Edit
   const handleUpdateSector = () => {
     if (editingSector && editingSector.name.trim()) {
       updateSector.mutate(
@@ -61,7 +59,6 @@ export function AdminSectorsDialogs({
       )
     }
   }
-  // Delete
   const handleConfirmDelete = () => {
     if (sectorToDeleteId !== null) {
       deleteSector.mutate(sectorToDeleteId, {
@@ -78,7 +75,6 @@ export function AdminSectorsDialogs({
   }
   return (
     <>
-      {/* Create Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent className="sm:max-w-[425px] rounded-lg shadow-xl">
           <DialogHeader>
@@ -111,7 +107,6 @@ export function AdminSectorsDialogs({
           </div>
         </DialogContent>
       </Dialog>
-      {/* Edit Dialog */}
       <Dialog open={!!editingSector} onOpenChange={() => setEditingSector(null)}>
         <DialogContent className="sm:max-w-[425px] rounded-lg shadow-xl">
           <DialogHeader>
@@ -145,7 +140,6 @@ export function AdminSectorsDialogs({
           )}
         </DialogContent>
       </Dialog>
-      {/* Delete Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent className="sm:max-w-[425px] rounded-lg shadow-xl">
           <DialogHeader>

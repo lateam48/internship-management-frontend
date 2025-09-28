@@ -72,11 +72,9 @@ const getMyApplications = async () => {
   return response.data;
 };
 
-const getApplicationsByStudent = async (studentId: number) => {
-  const response = await apiClient.get<ApplicationResponseDTO[]>(
-    `${BASE_URL}/my-applications`
-  );
-  return response.data;
+const getApplicationsByStudent = async (_studentId: number) => {
+  void _studentId;
+  return getMyApplications();
 };
 
 const getApplicationsByOffer = async (offerId: number) => {
@@ -111,7 +109,7 @@ const getApplicationBundle = async (applicationId: number) => {
       let filename = `application_${applicationId}_documents.zip`;
       if (contentDisposition) {
         const filenameMatch = contentDisposition.match(/filename="([^"]+)"/);
-        if (filenameMatch && filenameMatch[1]) {
+        if (filenameMatch?.[1]) {
           filename = filenameMatch[1];
         }
       }
@@ -133,7 +131,7 @@ const getApplicationBundle = async (applicationId: number) => {
 
 
 
-export default {
+const applicationService = {
   createApplication,
   getAllApplications,
   deleteApplication,
@@ -145,3 +143,5 @@ export default {
   getApplicationsByCompany,
   getApplicationBundle,
 };
+
+export default applicationService;

@@ -5,6 +5,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { GetInternshipOfferResponseDTO } from "@/types"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 interface AdminOfferDetailsCardProps {
   offer: GetInternshipOfferResponseDTO
@@ -82,7 +93,7 @@ export function AdminOfferDetailsCard({
           </div>
           <div className="flex items-center">
             <Clock className="h-5 w-5 mr-2 text-muted-foreground" />
-            <span>{offer.length * 4} semaines</span>
+            <span>{offer.length} mois</span>
           </div>
         </div>
 
@@ -132,17 +143,32 @@ export function AdminOfferDetailsCard({
             </Button>
           )}
           {offer.status !== "COMPLETED" && (
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={onComplete}
-              disabled={isMutating}
-            >
-              {isCompleting ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : null}
-              Marquer comme terminée
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  disabled={isMutating}
+                >
+                  {isCompleting ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : null}
+                  Marquer comme terminée
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{"Marquer l'offre comme terminée ?"}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Cette action est irréversible. Êtes-vous sûr de vouloir marquer cette offre comme terminée ?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogAction onClick={onComplete}>Confirmer</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </div>
       </CardContent>

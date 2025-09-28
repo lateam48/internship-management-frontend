@@ -15,8 +15,6 @@ export const useUsers = (filters?: { role?: UserRole }) => {
   }
 }
 
-// Staff hooks
-
 export const useStaff = (filters?: { role?: UserRole }) => {
   const getStaff = useQuery({
       queryKey: [UsersCacheKeys.Staff, filters],

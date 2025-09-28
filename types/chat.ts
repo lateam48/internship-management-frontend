@@ -45,7 +45,6 @@ export interface ChatParticipant {
   lastSeen?: string;
 }
 
-// WebSocket Events
 export interface WebSocketMessage {
   type: 'message' | 'reaction' | 'typing' | 'read' | 'online_status'
   data: unknown
@@ -69,7 +68,6 @@ export interface ChatApiResponse<T> {
   message?: string
 }
 
-// Emoji categories for picker
 export const EMOJI_CATEGORIES = {
   smileys: '😀 😃 😄 😁 😆 😅 😂 🤣 😊 😇',
   gestures: '👍 👎 👌 ✌️ 🤞 🤟 🤘 🤙 👈 👉',

@@ -32,7 +32,7 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
 
       const client = new Client({
         webSocketFactory: () =>
-          new SockJS(`${process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:8080/ws'}`),
+          new SockJS(`${process.env.NEXT_PUBLIC_WS_URL || 'https://internship-service-3sfp.onrender.com/ws'}`),
         reconnectDelay: 5000,
         heartbeatIncoming: 4000,
         heartbeatOutgoing: 4000,

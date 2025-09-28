@@ -24,14 +24,12 @@ apiClient.interceptors.request.use(
             }
             return config;
         } catch (error) {
-            // Always reject with Error object
             return Promise.reject(
                 error instanceof Error ? error : new Error("Request interceptor error")
             );
         }
     },
     (error: AxiosError) => {
-        // Always reject with Error object
         return Promise.reject(
             error instanceof Error ? error : new Error("Request error")
         );
@@ -45,7 +43,6 @@ apiClient.interceptors.response.use(
             const status = error.response?.status;
 
             if (status === 401) {
-                // Create proper error before redirecting
                 const err = new Error("Session expired");
                 err.name = "SessionExpiredError";
                 window.location.href = `/login?error=session_expired`;
@@ -72,7 +69,6 @@ apiClient.interceptors.response.use(
             }
         }
 
-        // Ensure we always reject with an Error instance
         return Promise.reject(
             error instanceof Error ? error : new Error("Unknown error")
         );

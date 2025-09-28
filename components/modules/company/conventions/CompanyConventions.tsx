@@ -7,6 +7,7 @@ import { CompanyConventionsHeader } from "./CompanyConventionsHeader"
 import { CompanyConventionsStats } from "./CompanyConventionsStats"
 import { CompanyConventionsGrid } from "./CompanyConventionsGrid"
 import { CompanyConventionsDialogs } from "./CompanyConventionsDialogs"
+import { CompanyConventionsFilters } from "./CompanyConventionsFilters"
 import type { ConventionResponseDTO } from "@/types"
 
 export function CompanyConventions() {
@@ -17,11 +18,23 @@ export function CompanyConventions() {
   const uploadPdfMutation = useUploadSignedPdf()
   const downloadPdfMutation = useDownloadConventionPdf()
 
-  // Dialog/edit state
+  const [search, setSearch] = useState("")
+  const [status, setStatus] = useState("all")
+
   const [editingConvention, setEditingConvention] = useState<ConventionResponseDTO | null>(null)
   const [uploadingConvention, setUploadingConvention] = useState<ConventionResponseDTO | null>(null)
 
-  // Handlers
+  const filteredConventions = conventions.filter(convention => {
+    const matchesStatus = status === "all" || convention.status === status.toUpperCase()
+    const searchTerm = search.toLowerCase().trim()
+    const matchesSearch =
+      search === "" ||
+      (convention.title || "").toLowerCase().includes(searchTerm) ||
+      (convention.studentName || "").toLowerCase().includes(searchTerm) ||
+      (convention.companyName || "").toLowerCase().includes(searchTerm)
+    return matchesStatus && matchesSearch
+  })
+
   const handleEditConvention = (convention: ConventionResponseDTO) => setEditingConvention(convention)
   const handleCloseEdit = () => setEditingConvention(null)
   const handleUploadConvention = (convention: ConventionResponseDTO) => setUploadingConvention(convention)
@@ -29,10 +42,16 @@ export function CompanyConventions() {
 
   return (
     <div className="space-y-6">
-      <CompanyConventionsHeader count={conventions.length} />
-      <CompanyConventionsStats conventions={conventions} />
+      <CompanyConventionsHeader count={filteredConventions.length} />
+      <CompanyConventionsStats conventions={filteredConventions} />
+      <CompanyConventionsFilters
+        search={search}
+        setSearch={setSearch}
+        status={status}
+        setStatus={setStatus}
+      />
       <CompanyConventionsGrid
-        conventions={conventions}
+        conventions={filteredConventions}
         isLoading={isLoading}
         onEditConvention={handleEditConvention}
         onUploadConvention={handleUploadConvention}

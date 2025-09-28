@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { MapPin, Clock, Users, Eye, Play, Pause, CheckCircle } from "lucide-react"
+import { MapPin, Clock, Users, Eye, Play, Pause, CheckCircle, Edit } from "lucide-react"
 import Link from "next/link"
 import type { GetInternshipOfferResponseDTO } from "@/types"
 import type { UseMutationResult } from "@tanstack/react-query";
@@ -86,6 +86,14 @@ export function CompanyOffersCard({
                 Voir
               </Button>
             </Link>
+
+            {offer.status !== "COMPLETED" && (
+              <Link href={`/dashboard/offers/${offer.id}?edit=true`}>
+                <Button variant="outline" size="sm">
+                  <Edit className="h-4 w-4" />
+                </Button>
+              </Link>
+            )}
 
             {offer.status === "ACTIVE" ? (
               <Button

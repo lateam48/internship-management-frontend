@@ -6,13 +6,11 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 export function AdminOfferDetailsLoading() {
   return (
     <div className="max-w-6xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-      {/* Header skeleton */}
       <div className="mb-6">
         <Skeleton className="h-9 w-48" />
       </div>
       
       <div className="grid grid-cols-1 gap-6">
-        {/* Main offer card skeleton */}
         <Card>
           <CardHeader>
             <div className="flex justify-between items-start">
@@ -63,7 +61,6 @@ export function AdminOfferDetailsLoading() {
           </CardContent>
         </Card>
         
-        {/* Admin details card skeleton */}
         <Card>
           <CardHeader>
             <Skeleton className="h-6 w-40" />

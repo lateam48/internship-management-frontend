@@ -25,7 +25,7 @@ export function StudentOfferDetailsCard({ offer }: { offer: GetInternshipOfferRe
           </div>
           <div className="flex items-center">
             <Clock className="h-5 w-5 mr-2 text-muted-foreground" />
-            <span className="text-foreground">{offer.length * 4} semaines</span>
+            <span className="text-foreground">{offer.length} mois</span>
           </div>
         </div>
         <div>

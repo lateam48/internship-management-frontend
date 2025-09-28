@@ -9,6 +9,7 @@ import { SendMessageRequest, ChatParticipant, ChatMessage } from '@/types';
 import { getSession } from 'next-auth/react'
 import { useStaff } from '@/hooks/useUsers'
 import { stompChatService } from '@/lib/chat';
+import { ChatCacheKeys } from '@/services/const';
 
 export const useChat = () => {
   const [isClient, setIsClient] = useState(false)
@@ -34,7 +35,6 @@ export const useChat = () => {
     updateParticipantStatus
   } = useChatStore()
 
-  // Fetch staff as chat participants
   const { getStaff } = useStaff();
   useEffect(() => {
     if (getStaff.data) {
@@ -54,19 +54,16 @@ export const useChat = () => {
     }
   }, [getStaff.data, setParticipants]);
 
-  // Fix hydration issue
   useEffect(() => {
     setIsClient(true)
   }, [])
 
-  // Query Keys
   const CHAT_KEYS = useMemo(() => ({
-    conversations: ['chat', 'conversations'],
-    messages: (userId?: number) => ['chat', 'messages', userId],
-    unreadCount: ['chat', 'unread-count']
+    conversations: [ChatCacheKeys.Chat, ChatCacheKeys.Conversations],
+    messages: (userId?: number) => [ChatCacheKeys.Chat, ChatCacheKeys.Messages, userId],
+    unreadCount: [ChatCacheKeys.Chat, ChatCacheKeys.UnreadCount]
   }), []);
 
-  // Fetch conversations
   const conversationsQuery = useQuery({
     queryKey: CHAT_KEYS.conversations,
     queryFn: async () => {
@@ -85,7 +82,6 @@ export const useChat = () => {
       if (!selectedParticipant) return []
       const response = await chatService.getConversation(selectedParticipant.id)
       if (response.success) {
-        // Merge new messages with existing ones, avoiding duplicates
         const allMessages = [...messages];
         response.data.forEach((msg) => {
           if (!allMessages.some((m) => m.id === msg.id)) {
@@ -100,7 +96,6 @@ export const useChat = () => {
     enabled: !!selectedParticipant && isClient,
   })
 
-  // Fetch unread count
   const unreadCountQuery = useQuery({
     queryKey: CHAT_KEYS.unreadCount,
     queryFn: async () => {
@@ -114,7 +109,6 @@ export const useChat = () => {
     enabled: isClient,
   })
 
-  // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: async (request: SendMessageRequest) => {
       const response = await chatService.sendMessage(request)
@@ -134,7 +128,6 @@ export const useChat = () => {
     }
   })
 
-  // Add reaction mutation
   const addReactionMutation = useMutation({
     mutationFn: async ({ messageId, emoji }: { messageId: string; emoji: string }) => {
       const response = await chatService.addReaction(messageId, emoji)
@@ -144,7 +137,6 @@ export const useChat = () => {
       throw new Error(response.message ?? 'Erreur lors de l\'ajout de la réaction')
     },
     onSuccess: ({ messageId, emoji }) => {
-      // Create a MessageReaction object and update the store
       const newReaction = {
         id: Date.now().toString(),
         emoji,
@@ -159,7 +151,6 @@ export const useChat = () => {
     }
   })
 
-  // Mark as read mutation
   const markAsReadMutation = useMutation({
     mutationFn: async (senderId: number) => {
       const response = await chatService.markAsRead(senderId)
@@ -177,7 +168,6 @@ export const useChat = () => {
     }
   })
 
-  // Delete message mutation
   const deleteMessageMutation = useMutation({
     mutationFn: async (messageId: string) => {
       const response = await chatService.deleteMessage(messageId)
@@ -194,7 +184,6 @@ export const useChat = () => {
     }
   })
 
-  // Delete all messages mutation
   const deleteAllMessagesMutation = useMutation({
     mutationFn: async () => {
       const response = await chatService.deleteAllMessages()
@@ -213,7 +202,7 @@ export const useChat = () => {
     }
   })
 
-  // Actions
+  
   const selectParticipant = useCallback((participant: ChatParticipant) => {
     setSelectedParticipant(participant)
     if (participant) {
@@ -245,18 +234,16 @@ export const useChat = () => {
     deleteAllMessagesMutation.mutate()
   }, [deleteAllMessagesMutation])
 
-  // Auto-refresh unread count
   useEffect(() => {
     if (!isClient) return
     
     const interval = setInterval(() => {
       queryClient.invalidateQueries({ queryKey: CHAT_KEYS.unreadCount })
-    }, 30000) // Refresh every 30 seconds
+    }, 30000)
 
     return () => clearInterval(interval)
   }, [isClient, CHAT_KEYS])
 
-  // --- WebSocket Integration (STOMP/SockJS) ---
   useEffect(() => {
     let disconnect: (() => void) | undefined;
     let active = true;
@@ -269,7 +256,6 @@ export const useChat = () => {
       disconnect = stompChatService.onMessage((message) => {
         if (!active) return;
         const msg = message as ChatMessage;
-        // Only add if the message is for the current conversation
         if (
           selectedParticipant &&
           (msg.senderId === selectedParticipant.id || msg.senderId === user?.id)
@@ -286,7 +272,6 @@ export const useChat = () => {
   }, [user, addMessage, selectedParticipant]);
 
   return {
-    // State
     conversations,
     currentConversation,
     messages,
@@ -297,7 +282,6 @@ export const useChat = () => {
     unreadCount,
     isClient,
 
-    // Actions
     selectParticipant,
     sendMessage,
     addReaction,
@@ -306,7 +290,6 @@ export const useChat = () => {
     markMessageAsRead,
     updateParticipantStatus,
 
-    // Mutations state
     isSending: sendMessageMutation.isPending,
     isAddingReaction: addReactionMutation.isPending,
     isDeleting: deleteMessageMutation.isPending,

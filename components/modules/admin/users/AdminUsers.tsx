@@ -14,6 +14,7 @@ import { useSectors } from "@/hooks/useSectors"
 
 export function AdminUsers() {
   const [selectedRole, setSelectedRole] = useState<UserRole | "ALL">("ALL")
+  const [searchValue, setSearchValue] = useState("")
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -28,12 +29,24 @@ export function AdminUsers() {
   const { getUsers } = useUsers(userFilters)
   const { createUser, updateUser, deleteUser } = useUser({})
 
-  const { data: users, isLoading } = getUsers
+  const { data: allUsers, isLoading } = getUsers
+  
+  const users = allUsers?.filter(user => {
+    if (!searchValue.trim()) return true;
+    const search = searchValue.toLowerCase();
+    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
+    return (
+      user.firstName?.toLowerCase().includes(search) ||
+      user.lastName?.toLowerCase().includes(search) ||
+      user.email?.toLowerCase().includes(search) ||
+      user.username?.toLowerCase().includes(search) ||
+      fullName.includes(search)
+    );
+  })
   const createUserMutation: CreateUserMutation = createUser
   const updateUserMutation: UpdateUserMutation = updateUser
   const deleteUserMutation: DeleteUserMutation = deleteUser
 
-  // Calculate role statistics
   const roleStats = {
     ADMIN: users?.filter((u) => u.role === "ADMIN").length ?? 0,
     TEACHER: users?.filter((u) => u.role === "TEACHER").length ?? 0,
@@ -56,7 +69,11 @@ export function AdminUsers() {
 
   return (
     <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-      <AdminUsersHeader onOpenCreateDialog={() => setIsCreateDialogOpen(true)} />
+      <AdminUsersHeader 
+        onOpenCreateDialog={() => setIsCreateDialogOpen(true)}
+        searchValue={searchValue}
+        onSearchChange={setSearchValue}
+      />
       <AdminUsersStats roleStats={roleStats} onRoleClick={role => setSelectedRole(role as UserRole)} />
       <AdminUsersFilters selectedRole={selectedRole} onRoleChange={setSelectedRole} />
       <AdminUsersGrid
