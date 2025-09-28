@@ -25,6 +25,7 @@ function getStatusColor(status: string) {
     case "APPROVED_BY_ADMIN":
       return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
     case "REJECTED_BY_TEACHER":
+    case "REJECTED_BY_ADMIN":
       return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
     default:
       return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
@@ -38,9 +39,11 @@ function getStatusText(status: string) {
     case "VALIDATED_BY_TEACHER":
       return "Validée"
     case "APPROVED_BY_ADMIN":
-      return "Approuvée par l'admin"
+      return "Approuvée"
     case "REJECTED_BY_TEACHER":
-      return "Rejetée"
+      return "Rejetée par enseignant"
+    case "REJECTED_BY_ADMIN":
+      return "Rejetée par admin"
     default:
       return status
   }
@@ -79,6 +82,8 @@ export function TeacherConventionsGrid(props: TeacherConventionsGridProps) {
 
   const pendingConventions = props.conventions?.filter((conv) => conv.status === "PENDING") || []
   const validatedConventions = props.conventions?.filter((conv) => conv.status === "VALIDATED_BY_TEACHER") || []
+  const approvedConventions = props.conventions?.filter((conv) => conv.status === "APPROVED_BY_ADMIN") || []
+  const rejectedConventions = props.conventions?.filter((conv) => conv.status === "REJECTED_BY_TEACHER" || conv.status === "REJECTED_BY_ADMIN") || []
 
   const regeneratePdfMutation = useRegenerateConventionPdf()
   const uploadPdfMutation = useUploadSignedPdf()
@@ -373,6 +378,128 @@ export function TeacherConventionsGrid(props: TeacherConventionsGridProps) {
                         </div>
                       )}
                     </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {/* Approved Conventions */}
+      {approvedConventions.length > 0 && (
+        <div>
+          <h2 className="text-xl font-semibold mb-4 text-green-800 dark:text-green-200">
+            Approuvées ({approvedConventions.length})
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {approvedConventions.map((convention) => (
+              <Card key={convention.id} className="border-l-4 border-l-green-500">
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="text-lg">{convention.title}</CardTitle>
+                      <CardDescription>
+                        Étudiant: {convention.studentName} | Entreprise: {convention.companyName}
+                      </CardDescription>
+                    </div>
+                    <Badge className={getStatusColor(convention.status)}>
+                      {getStatusText(convention.status)}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 gap-2 text-sm">
+                      <div className="flex items-center text-muted-foreground">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        {convention.location}
+                      </div>
+                      <div className="flex items-center text-muted-foreground">
+                        <Clock className="h-4 w-4 mr-1" />
+                        {convention.length} semaines
+                      </div>
+                      <div className="flex items-center text-muted-foreground">
+                        <Calendar className="h-4 w-4 mr-1" />
+                        Du {format(new Date(convention.startDate), "dd MMM", { locale: fr })} au{" "}
+                        {format(new Date(convention.endDate), "dd MMM yyyy", { locale: fr })}
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => handleRegenerateAndDownload(convention.id)}
+                      disabled={props.downloadingConventions.has(convention.id) || regeneratePdfMutation.isPending}
+                    >
+                      {props.downloadingConventions.has(convention.id) || regeneratePdfMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Download className="h-4 w-4 mr-2" />
+                      )}
+                      Télécharger PDF
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {/* Rejected Conventions */}
+      {rejectedConventions.length > 0 && (
+        <div>
+          <h2 className="text-xl font-semibold mb-4 text-red-800 dark:text-red-200">
+            Rejetées ({rejectedConventions.length})
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {rejectedConventions.map((convention) => (
+              <Card key={convention.id} className="border-l-4 border-l-red-500">
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="text-lg">{convention.title}</CardTitle>
+                      <CardDescription>
+                        Étudiant: {convention.studentName} | Entreprise: {convention.companyName}
+                      </CardDescription>
+                    </div>
+                    <Badge className={getStatusColor(convention.status)}>
+                      {getStatusText(convention.status)}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 gap-2 text-sm">
+                      <div className="flex items-center text-muted-foreground">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        {convention.location}
+                      </div>
+                      <div className="flex items-center text-muted-foreground">
+                        <Clock className="h-4 w-4 mr-1" />
+                        {convention.length} semaines
+                      </div>
+                      <div className="flex items-center text-muted-foreground">
+                        <Calendar className="h-4 w-4 mr-1" />
+                        Du {format(new Date(convention.startDate), "dd MMM", { locale: fr })} au{" "}
+                        {format(new Date(convention.endDate), "dd MMM yyyy", { locale: fr })}
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => handleRegenerateAndDownload(convention.id)}
+                      disabled={props.downloadingConventions.has(convention.id) || regeneratePdfMutation.isPending}
+                    >
+                      {props.downloadingConventions.has(convention.id) || regeneratePdfMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Download className="h-4 w-4 mr-2" />
+                      )}
+                      Télécharger PDF
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

@@ -28,7 +28,7 @@ export function AdminSectors() {
         sectors={sectors}
         isLoading={isLoading}
         onEdit={(sector: Sector) => setEditingSector(sector)}
-        onDelete={(sectorId: number) => setSectorToDeleteId(sectorId)}
+        onDelete={(sectorId: number) => deleteSector.mutate(sectorId)}
       />
       <AdminSectorsDialogs
         isCreateDialogOpen={isCreateDialogOpen}

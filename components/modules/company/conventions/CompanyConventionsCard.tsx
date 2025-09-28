@@ -30,6 +30,8 @@ export function CompanyConventionsCard({
 }: Readonly<CompanyConventionsCardProps>) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const regeneratePdfMutation = useRegenerateConventionPdf()
+  const [uploading, setUploading] = useState(false)
+  const [inputResetKey, setInputResetKey] = useState(0)
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -74,7 +76,7 @@ export function CompanyConventionsCard({
     await regeneratePdfMutation.mutateAsync(convention.id)
     setTimeout(() => {
       onDownloadPdf.mutate(convention.id)
-    }, 1000) // attendre 1s pour laisser le backend générer le PDF
+    }, 1000)
   }
 
   return (
@@ -123,7 +125,7 @@ export function CompanyConventionsCard({
           )}
 
           <div className="space-y-2 pt-2">
-            {convention.status === "VALIDATED_BY_TEACHER" && (
+            {convention.status === "APPROVED_BY_ADMIN" && (
               <div className="space-y-2">
                 <Label htmlFor={`file-${convention.id}`} className="text-sm font-medium">
                   Télécharger la convention signée
@@ -131,6 +133,7 @@ export function CompanyConventionsCard({
                 <div className="flex space-x-2">
                   <Input
                     id={`file-${convention.id}`}
+                    key={`file-${convention.id}-${inputResetKey}`}
                     type="file"
                     accept=".pdf"
                     onChange={handleFileChange}
@@ -138,13 +141,28 @@ export function CompanyConventionsCard({
                   />
                   <SubmitButton
                     size="sm"
-                    onClick={() => selectedFile && uploadPdfMutation.mutate({ id: convention.id, file: selectedFile })}
-                    disabled={!selectedFile || uploadPdfMutation.isPending}
-                    loading={uploadPdfMutation.isPending}
+                    onClick={() => {
+                      if (!selectedFile) return
+                      setUploading(true)
+                      uploadPdfMutation.mutate(
+                        { id: convention.id, file: selectedFile },
+                        {
+                          onSuccess: () => {
+                            setSelectedFile(null)
+                            setInputResetKey((k) => k + 1)
+                          },
+                          onSettled: () => {
+                            setUploading(false)
+                          },
+                        }
+                      )
+                    }}
+                    disabled={!selectedFile || uploading}
+                    loading={uploading}
                     loadingText="Upload..."
                     label="Uploader"
                   >
-                    {uploadPdfMutation.isPending ? (
+                    {uploading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
                       <Upload className="h-4 w-4" />
@@ -155,23 +173,25 @@ export function CompanyConventionsCard({
             )}
 
             <div className="flex space-x-2">
-              <SubmitButton
-                variant="outline"
-                size="sm"
-                className="flex-1"
-                onClick={handleRegenerateAndDownload}
-                disabled={onDownloadPdf.isPending || regeneratePdfMutation.isPending}
-                loading={onDownloadPdf.isPending || regeneratePdfMutation.isPending}
-                loadingText="Téléchargement..."
-                label="Régénérer & Télécharger PDF"
-              >
-                {onDownloadPdf.isPending || regeneratePdfMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <Download className="h-4 w-4 mr-2" />
-                )}
-                Télécharger PDF
-              </SubmitButton>
+              {convention.status === "APPROVED_BY_ADMIN" && (
+                <SubmitButton
+                  variant="outline"
+                  size="sm"
+                  className="flex-1"
+                  onClick={handleRegenerateAndDownload}
+                  disabled={onDownloadPdf.isPending || regeneratePdfMutation.isPending}
+                  loading={onDownloadPdf.isPending || regeneratePdfMutation.isPending}
+                  loadingText="Téléchargement..."
+                  label="Régénérer & Télécharger PDF"
+                >
+                  {onDownloadPdf.isPending || regeneratePdfMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Download className="h-4 w-4 mr-2" />
+                  )}
+                  Télécharger PDF
+                </SubmitButton>
+              )}
               {convention.status === "PENDING" && (
                 <Button variant="outline" size="sm" onClick={onEdit}>
                   <Edit className="h-4 w-4" />

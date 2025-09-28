@@ -6,8 +6,8 @@ import {
   Hash,
   LucideListChecks,
   Briefcase,
-  Building,
   UserRoundPen,
+  MessageCircle,
 } from "lucide-react"
 
 export interface NavigationItem {
@@ -90,19 +90,7 @@ export const navigationConfig: NavigationItem[] = [
         icon: Book,
         roles: [UserRoles.COMPANY],
     },
-    {
-        title: "Profil Entreprise",
-        href: "/dashboard/profile",
-        icon: Building,
-        roles: [UserRoles.COMPANY],
-    },
-    // Common
-    // {
-    //     title: "Paramètres",
-    //     href: "/dashboard/settings",
-    //     icon: Settings,
-    //     roles: [UserRoles.ADMIN, UserRoles.TEACHER, UserRoles.STUDENT, UserRoles.COMPANY],
-    // },
+
     {
         title: "Profil",
         href: "/dashboard/profile",

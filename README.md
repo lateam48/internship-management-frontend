@@ -93,7 +93,6 @@ interface Sector {
   description?: string
 }
 ```
-
 ## 💻 Interfaces utilisateur
 
 ### Dashboard étudiant
@@ -232,6 +231,7 @@ types/                    # Types TypeScript
 - ✅ Consulter les statistiques globales
 - ✅ Modérer le contenu
 
+
 ## 🚀 Installation et déploiement
 
 ### Prérequis
@@ -303,18 +303,13 @@ pnpm lint     # Linting du code
 - API de notifications email
 - Export de données
 
-
 ### 📋 Roadmap
 - Module de reporting
 - Intégration calendrier
 - Système de notation
 - Application mobile
 
----
-
 **Version** : 0.1.0  
 **Dernière mise à jour** : 2025  
 **Licence** : Voir fichier LICENSE
 **Équipe** : 48 étudiants  
-
-

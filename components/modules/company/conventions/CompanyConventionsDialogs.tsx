@@ -99,8 +99,9 @@ export function CompanyConventionsDialogs({
     onCloseEdit()
   }
 
-  // Upload PDF
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+  const [inputResetKey, setInputResetKey] = useState(0)
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file && file.type === 'application/pdf') {
@@ -111,14 +112,20 @@ export function CompanyConventionsDialogs({
   }
   const handleSubmitUpload = () => {
     if (!uploadingConvention || !uploadedFile) return
-    uploadPdfMutation.mutate({ id: uploadingConvention.id, file: uploadedFile })
-    setUploadedFile(null)
-    onCloseUpload()
+    uploadPdfMutation.mutate(
+      { id: uploadingConvention.id, file: uploadedFile },
+      {
+        onSuccess: () => {
+          setUploadedFile(null)
+          setInputResetKey((k) => k + 1)
+          onCloseUpload()
+        },
+      }
+    )
   }
 
   return (
     <>
-      {/* Edit Dialog */}
       <Dialog open={!!editingConvention} onOpenChange={onCloseEdit}>
         <DialogContent className="my-6 p-4 h-full max-h-[80vh] overflow-y-auto">
           <DialogHeader className="pb-2">
@@ -318,7 +325,6 @@ export function CompanyConventionsDialogs({
         </DialogContent>
       </Dialog>
 
-      {/* Upload Dialog */}
       <Dialog open={!!uploadingConvention} onOpenChange={onCloseUpload}>
         <DialogContent className="my-6 p-4 h-full max-h-[80vh] overflow-y-auto">
           <DialogHeader className="pb-2">
@@ -335,7 +341,14 @@ export function CompanyConventionsDialogs({
                   <h3 className="text-xs font-medium mb-1">Télécharger votre convention</h3>
                   <p className="text-xs text-gray-500 mb-2">Uploadez votre convention PDF</p>
                   <div className="space-y-2">
-                    <Input type="file" accept=".pdf" onChange={handleFileChange} className="text-xs h-7" />
+                    <Input
+                      key={`company-upload-dialog-${uploadingConvention?.id}-${inputResetKey}`}
+                      type="file"
+                      accept=".pdf"
+                      onChange={handleFileChange}
+                      className="text-xs h-7"
+                    />
+
                     {uploadedFile && (
                       <div className="flex items-center justify-center space-x-2 text-green-600">
                         <span className="text-xs">{uploadedFile.name}</span>

@@ -8,13 +8,11 @@ const getAllConventions = async (): Promise<ConventionResponseDTO[]> => {
   return response.data
 }
 
-// Méthode pour récupérer les conventions par enseignant
 const getConventionsByTeacher = async (teacherId: number): Promise<ConventionResponseDTO[]> => {
   const response = await apiClient.get<ConventionResponseDTO[]>(`${BASE_URL}/teacher/${teacherId}`)
   return response.data
 }
 
-// Méthode pour récupérer les conventions par entreprise
 const getConventionsByCompany = async (companyId: number): Promise<ConventionResponseDTO[]> => {
   const response = await apiClient.get<ConventionResponseDTO[]>(`${BASE_URL}/company/${companyId}`)
   return response.data
@@ -169,10 +167,10 @@ const regenerateConventionPdf = async (id: number): Promise<void> => {
   await apiClient.put(`${BASE_URL}/${id}/regenerate-pdf`)
 }
 
-export default {
+const conventionService = {
   getAllConventions,
-  getConventionsByTeacher, // Ajouté
-  getConventionsByCompany, // Ajouté
+  getConventionsByTeacher,
+  getConventionsByCompany,
   getConventionById,
   checkConventionExistsForApplication,
   createConventionFromApplication,
@@ -185,4 +183,6 @@ export default {
   checkPdfAvailability,
   uploadSignedPdf,
   regenerateConventionPdf,
-}
+};
+
+export default conventionService;

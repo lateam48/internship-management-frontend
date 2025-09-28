@@ -13,7 +13,6 @@ export const useNotifications = (params?: {
 }) => {
   const { userId, notificationId, unreadOnly, status } = params || {};
 
-  // Queries avec gestion sécurisée des paramètres
   const allNotifications = useQuery({
     queryKey: [NotificationCacheKeys.AllNotifications],
     queryFn: notificationService.fetchAllNotifications,
@@ -52,16 +51,13 @@ export const useNotifications = (params?: {
     enabled: !!userId && !!status,
   });
 
-  // Mutations avec invalidations précises
   const createNotification = useMutation({
     mutationFn: notificationService.createAndPostNotification,
     onSuccess: (_, variables) => {
-      // Invalidation globale
       queryClient.invalidateQueries({
         queryKey: [NotificationCacheKeys.AllNotifications],
       });
 
-      // Invalidation pour tous les utilisateurs concernés
       if (variables.userIds && variables.userIds.length > 0) {
         variables.userIds.forEach((userId) => {
           queryClient.invalidateQueries({
@@ -75,7 +71,6 @@ export const useNotifications = (params?: {
           });
         });
       }
-      // Invalidation globale si aucune cible spécifique (rôle/secteur)
       else {
         queryClient.invalidateQueries({
           queryKey: [NotificationCacheKeys.UserNotifications],
@@ -93,14 +88,11 @@ export const useNotifications = (params?: {
   const markAsRead = useMutation({
   mutationFn: notificationService.markNotificationsAsRead,
   onSuccess: (_, variables) => {
-    // Invalidation PRÉCISE des caches
     variables.notificationIds.forEach(id => {
-      // 1. Invalider la notification spécifique
       queryClient.invalidateQueries({
         queryKey: [NotificationCacheKeys.NotificationById, id]
       });
       
-      // 2. Invalider dans la liste globale
       queryClient.setQueryData<NotificationDTO[]>(
         [NotificationCacheKeys.AllNotifications],
         (old) => old?.map(n => 
@@ -114,14 +106,12 @@ export const useNotifications = (params?: {
       );
     });
 
-    // 3. Invalidation pour l'utilisateur
     queryClient.setQueryData(
       [NotificationCacheKeys.UserNotifications, variables.userId, true],
       (old: NotificationDTO[] | undefined) => 
         old?.filter(n => !variables.notificationIds.includes(n.id))
     );
     
-    // 4. Rafraîchissement global (optionnel mais sûr)
     setTimeout(() => {
       queryClient.invalidateQueries({
         queryKey: [NotificationCacheKeys.AllNotifications]
@@ -137,7 +127,6 @@ export const useNotifications = (params?: {
         queryKey: [NotificationCacheKeys.AllNotifications],
       });
 
-      // Invalidation globale UserNotifications (car userId inconnu)
       queryClient.invalidateQueries({
         queryKey: [NotificationCacheKeys.UserNotifications],
         exact: false,
@@ -162,13 +151,11 @@ export const useNotifications = (params?: {
         queryKey: [NotificationCacheKeys.AllNotifications],
       });
 
-      // Invalidation globale UserNotifications
       queryClient.invalidateQueries({
         queryKey: [NotificationCacheKeys.UserNotifications],
         exact: false,
       });
 
-      // Invalidation spécifique
       queryClient.invalidateQueries({
         queryKey: [NotificationCacheKeys.NotificationById, variables.id],
       });
@@ -187,7 +174,6 @@ export const useNotifications = (params?: {
         queryKey: [NotificationCacheKeys.AllNotifications],
       });
 
-      // Invalidation globale UserNotifications
       queryClient.invalidateQueries({
         queryKey: [NotificationCacheKeys.UserNotifications],
         exact: false,
@@ -213,7 +199,6 @@ export const useNotifications = (params?: {
       notificationId: number;
     }) => notificationService.deleteUserNotification(userId, notificationId),
     onSuccess: (_, variables) => {
-      // Invalidation ciblée
       queryClient.invalidateQueries({
         queryKey: [NotificationCacheKeys.UserNotifications, variables.userId],
         exact: false,
@@ -245,18 +230,20 @@ export const useNotifications = (params?: {
       queryClient.invalidateQueries({
         queryKey: [NotificationCacheKeys.UserNotifications, userId],
       });
+      queryClient.invalidateQueries({
+        queryKey: [NotificationCacheKeys.NotificationByStatus, userId],
+        exact: false,
+      });
     }
   }, [userId]);
 
   return {
-    // Queries
     allNotifications,
     userNotifications,
     notificationById,
     notificationByStatus,
     refetchNotifications,
 
-    // Mutations
     createNotification,
     markAsRead,
     archiveNotification,

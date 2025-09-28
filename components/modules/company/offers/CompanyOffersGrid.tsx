@@ -8,8 +8,6 @@ import Link from "next/link"
 import { CompanyOffersCard } from "./CompanyOffersCard"
 import type { GetInternshipOfferResponseDTO } from "@/types"
 import type { UseMutationResult } from "@tanstack/react-query";
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogFooter, AlertDialogCancel, AlertDialogAction, AlertDialogDescription } from "@/components/ui/alert-dialog"
-import { useState } from "react"
 
 interface CompanyOffersGridProps {
   offers?: GetInternshipOfferResponseDTO[]
@@ -28,8 +26,6 @@ export function CompanyOffersGrid({
   inactivateMutation,
   completeMutation,
 }: Readonly<CompanyOffersGridProps>) {
-  const [confirmOfferId, setConfirmOfferId] = useState<number | null>(null)
-
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -77,29 +73,10 @@ export function CompanyOffersGrid({
             activateMutation={activateMutation}
             inactivateMutation={inactivateMutation}
             completeMutation={completeMutation}
-            onRequestComplete={() => setConfirmOfferId(offer.id)}
+            onRequestComplete={() => onStatusChange(offer.id, "complete")}
           />
         ))}
       </div>
-      <AlertDialog open={confirmOfferId !== null} onOpenChange={open => !open && setConfirmOfferId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{"Marquer l'offre comme terminée ?"}</AlertDialogTitle>
-            <AlertDialogDescription>
-              Cette action est irréversible. Êtes-vous sûr de vouloir marquer cette offre comme terminée ?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
-            <AlertDialogAction onClick={() => {
-              if (confirmOfferId !== null) {
-                onStatusChange(confirmOfferId, "complete")
-                setConfirmOfferId(null)
-              }
-            }}>Confirmer</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   )
-} 
+}

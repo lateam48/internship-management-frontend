@@ -67,12 +67,12 @@ export function CompanyApplicationsDialogs({
       id: 0,
       title: data.title,
       description: data.description,
-      location: "", // à adapter si tu as ce champ
-      skills: [],    // à adapter si tu as ce champ
-      length: 0,     // à adapter si tu as ce champ
-      companyId: selectedApplication.offerId || 0, // ou autre source si besoin
+      location: "", 
+      skills: [],   
+      length: 0,     
+      companyId: selectedApplication.offerId || 0,
       studentId: selectedApplication.studentId || 0,
-      teacherId: 0, // à adapter si tu as l'info
+      teacherId: 0,
       startDate: data.startDate ? data.startDate.toISOString().slice(0, 10) : "",
       endDate: data.endDate ? data.endDate.toISOString().slice(0, 10) : "",
       companyName: data.companyName,

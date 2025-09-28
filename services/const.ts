@@ -8,7 +8,8 @@ export const SectorsCacheKeys = Object.freeze({
 })
 
 export const UsersCacheKeys = Object.freeze({
-  Users: 'users'
+  Users: 'users',
+  Staff: 'staff'
 })
 
 export const StaffCacheKeys = Object.freeze({
@@ -21,4 +22,29 @@ export const NotificationCacheKeys = Object.freeze({
   UserNotifications: 'userNotifications',
   NotificationById: 'notificationById',
   NotificationByStatus: 'notificationByStatus',
-});
+})
+
+export const ApplicationCacheKeys = Object.freeze({
+  Applications: 'applications',
+  MyApplications: 'my-applications',
+  Student: 'student',
+  Company: 'company',
+  Offer: 'offer',
+  All: 'all'
+})
+
+export const ConventionCacheKeys = Object.freeze({
+  Conventions: 'conventions',
+  Convention: 'convention',
+  ConventionExists: 'convention-exists',
+  ConventionPdf: 'convention-pdf',
+  Company: 'company',
+  Teacher: 'teacher'
+})
+
+export const ChatCacheKeys = Object.freeze({
+  Chat: 'chat',
+  Conversations: 'conversations',
+  Messages: 'messages',
+  UnreadCount: 'unread-count'
+})
