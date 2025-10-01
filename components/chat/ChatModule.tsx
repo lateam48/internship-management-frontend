@@ -21,9 +21,9 @@ import { ChatParticipant, SendMessageRequest, ChatMessage, TypingIndicator } fro
 import { useToast } from '@/hooks/use-toast';
 
 interface ChatModuleProps {
-  className?: string;
-  defaultView?: 'list' | 'conversation';
-  compactMode?: boolean;
+  readonly className?: string;
+  readonly defaultView?: 'list' | 'conversation';
+  readonly compactMode?: boolean;
 }
 
 export function ChatModule({ 
@@ -71,9 +71,10 @@ export function ChatModule({
       await store.getOrCreateConversation(participant.id);
       setMobileView('conversation');
     } catch (err) {
+      console.error("Failed to create conversation:", err);
       toast({
         title: "Erreur",
-        description: "Impossible de créer la conversation",
+        description: err instanceof Error ? err.message : "Impossible de créer la conversation",
         variant: "destructive",
       });
       console.error(err);
@@ -120,9 +121,10 @@ export function ChatModule({
         description: "Le message a été supprimé avec succès",
       });
     } catch (err) {
+      console.error("Failed to delete message:", err);
       toast({
-        title: "Erreur",
-        description: "Impossible de supprimer le message",
+        title: `Erreur`,
+        description: err instanceof Error ? err.message : "Impossible de supprimer le message",
         variant: "destructive",
       });
       console.error(err);

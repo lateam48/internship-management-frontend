@@ -11,12 +11,12 @@ import { ChatMessageInput } from './ChatMessageInput';
 import ChatConversationSkeleton from './ChatConversationSkeleton';
 
 interface ConversationViewProps {
-  participant?: ChatParticipant | null;
-  className?: string;
-  onBack?: () => void;
+  readonly participant?: ChatParticipant | null;
+  readonly className?: string;
+  readonly onBack?: () => void;
 }
 
-export function ConversationView({ participant, className, onBack }: Readonly<ConversationViewProps>) {
+export function ConversationView({ participant, className, onBack }: ConversationViewProps) {
   const currentUserId = useChatStoreV2((s) => s.currentUserId);
   const {
     activeConversation,

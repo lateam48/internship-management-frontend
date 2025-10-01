@@ -11,9 +11,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useChatStoreV2 } from '@/stores/chatStoreV2';
 
 interface ChatWidgetProps {
-  position?: 'bottom-right' | 'bottom-left';
-  defaultOpen?: boolean;
-  className?: string;
+  readonly position?: 'bottom-right' | 'bottom-left';
+  readonly defaultOpen?: boolean;
+  readonly className?: string;
 }
 
 export function ChatWidget({ 
